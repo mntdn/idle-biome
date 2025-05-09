@@ -1,0 +1,58 @@
+$width: 60px;
+$fillColor: #ccc;
+$height: $width * sin(60deg);
+* {
+    --hex-fill-color: #ddd;
+    --hex-fill-color-hover: #ccc;
+}
+.hexagon {
+	display: inline-block;
+	position: relative;
+	width: $width;
+    margin-left: -12px;
+    margin-bottom: -2px;
+    cursor: pointer;
+
+    &:before,
+    &:after {
+        content: '';
+        display: block;
+        width: 50%;
+        border: 0 solid transparent;
+    }
+    &:before {
+        border-bottom-color: var(--hex-fill-color);
+        border-width: 0 calc($width/4) calc($height/2);
+    }
+    &:after {
+        border-top-color: var(--hex-fill-color);
+        border-width: calc($height/2) calc($width/4) 0;
+    }
+    & > .contents {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 25%;
+        right: 25%;
+    }
+
+    &.low {
+        top: 26px;
+    }
+
+    &:hover{
+        --hex-fill-color: var(--hex-fill-color-hover) !important;
+    }
+}
+#myimg {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+	width: 50%;
+}
+.container{
+    padding-left: 10px ;
+}
