@@ -5,8 +5,14 @@ interface Tile {
 	q: number,
 	r: number,
 	color: string,
-	colorHover: string
+	colorHover: string,
+	isHidden: boolean,
+	id: string
 }
+
+const hexSpacing = 2;
+const hexWidth = 60;
+const hexHeight = hexWidth * Math.sin(60*Math.PI/180);
 
 let tileList: Tile[][] = []
 
@@ -39,42 +45,47 @@ let colorList = [
 
 const getHex = (t: Tile) => {
 	let hex: HTMLElement = <HTMLDivElement>document.createElement('div');
-	hex.classList = `hexagon ${t.q % 2 !== 0 ? 'low' : ''}`;
+	hex.id = t.id;
+	hex.classList = `hexagon ${t.q % 2 !== 0 ? 'low' : ''} ${t.isHidden ? 'hidden' : ''}`;
 	hex.style = `--hex-fill-color:${t.color};--hex-fill-color-hover:${t.colorHover};`;
+	hex.onmouseover = () => {console.log(t.q, t.r, t.id)}
 	hex.innerHTML = `<div class="contents"></div>`;
 	return hex;
 }
 
-for(let i = 0; i < 2; i++) {
-	tileList.push([]);
-	for(let j = 0; j < 16; j++)
-		tileList[i].push({
-			r: i,
-			q: j,
-			color: colorList[utils.default.getRandomInt(0, colorList.length)],
-			colorHover: colorList[utils.default.getRandomInt(0, colorList.length)]
-		});
-}
-
-
 var d = document.getElementById('app');
 if(d){
-	// let hex: HTMLElement = <HTMLDivElement>document.createElement('div');
-	// hex.classList = 'container';
-	// for(let i = 0; i < 16; i++)
-	// 	hex.appendChild(getHex(i%2 != 0));
+	d.style = `--hex-width: ${hexWidth}px; 
+		--hex-height: ${hexHeight}px; 
+		--hex-margin-left: ${(-1 * hexWidth/4) + hexSpacing}px;
+		--hex-margin-bottom: ${-1 * hexSpacing}px;
+		--hex-low-top: ${(hexHeight / 2) + hexSpacing}px;
+		--hex-container-pad-top: ${hexSpacing}px`;
 
-	// d.appendChild(hex);
+	var nbHexPerLine = Math.floor(d.clientWidth / ((hexWidth * 3/4) + hexSpacing));
+	var nbLines = Math.floor(d.clientHeight / hexHeight);
+	var color = colorList[utils.default.getRandomInt(0, colorList.length)];
+	var colorHover = colorList[utils.default.getRandomInt(0, colorList.length)];
+
+	for(let i = 0; i < nbLines; i++) {
+		tileList.push([]);
+		for(let j = 0; j < nbHexPerLine; j++)
+			tileList[i].push({
+				r: i,
+				q: j,
+				color: color,
+				colorHover: colorHover,
+				isHidden: false,
+				id: utils.default.guid()
+			});
+	}
 	
-	// hex = <HTMLDivElement>document.createElement('div');
 	tileList.forEach(l => {
 		let c: HTMLElement = <HTMLDivElement>document.createElement('div');
-		c.classList = 'container';
+		c.classList = 'hex-container';
 		l.forEach(t => {
 			c.appendChild(getHex(t));
 		})
 		if(d) d.appendChild(c);
 	})
-
-	// d.appendChild(hex);
 }
