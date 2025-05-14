@@ -2,8 +2,11 @@ import * as utils from "./shared/utils"
 import './style/main.scss';
 
 interface Tile {
+	col: number,
+	line: number,
 	q: number,
 	r: number,
+	s: number,
 	color: string,
 	colorHover: string,
 	isHidden: boolean,
@@ -49,7 +52,7 @@ const getHex = (t: Tile) => {
 	hex.classList = `hexagon ${t.q % 2 !== 0 ? 'low' : ''} ${t.isHidden ? 'hidden' : ''}`;
 	hex.style = `--hex-fill-color:${t.color};--hex-fill-color-hover:${t.colorHover};`;
 	hex.onmouseover = () => {console.log(t.q, t.r, t.id)}
-	hex.innerHTML = `<div class="contents"></div>`;
+	hex.innerHTML = `<div class="contents">${t.col},${t.line} | ${t.s},${t.q},${t.r}</div>`;
 	return hex;
 }
 
@@ -67,17 +70,31 @@ if(d){
 	var color = colorList[utils.default.getRandomInt(0, colorList.length)];
 	var colorHover = colorList[utils.default.getRandomInt(0, colorList.length)];
 
+	// length of one of the sides of the hexagon
+	var hexagonalGridSize = 4;
+	nbHexPerLine = (2 * hexagonalGridSize) - 1;
+	nbLines = nbHexPerLine;
+
 	for(let i = 0; i < nbLines; i++) {
 		tileList.push([]);
-		for(let j = 0; j < nbHexPerLine; j++)
+		let line = i - hexagonalGridSize + 1;
+		for(let j = 0; j < nbHexPerLine; j++){
+			let col = j - hexagonalGridSize + 1;
+			let r = line - (col - (col&1)) / 2;
+			let q = col;
+			let s = (-1 * q) - r;
 			tileList[i].push({
-				r: i,
-				q: j,
+				line: line,
+				col: col,
+				r: r,
+				q: q,
+				s: s,
 				color: color,
 				colorHover: colorHover,
-				isHidden: false,
+				isHidden: (Math.abs(s) > hexagonalGridSize - 1) || (Math.abs(q) > hexagonalGridSize - 1) || (Math.abs(r) > hexagonalGridSize - 1),
 				id: utils.default.guid()
 			});
+		}
 	}
 	
 	tileList.forEach(l => {
