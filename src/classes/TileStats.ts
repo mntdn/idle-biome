@@ -16,6 +16,7 @@ export default class TileStats {
     addWaterPerTick(wpt: number) {
         this.waterPerTick += wpt;
         this.hasTickAction = true;
+        console.log(this.waterPerTick);
     }
 
     tickExec() {

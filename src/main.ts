@@ -15,11 +15,6 @@ interface Tile {
 	stats: TileStats;
 }
 
-interface TileMap {
-	id: string;
-	isHidden: boolean;
-}
-
 interface TileShift {
 	qShift: number;
 	rShift: number;
@@ -30,8 +25,12 @@ const hexSpacing = 2;
 const hexWidth = 60;
 const hexHeight = hexWidth * Math.sin((60 * Math.PI) / 180);
 
-let tileList: Tile[][] = [];
-let hexMap: Map<string, TileMap> = new Map();
+// Map of tile q r s coords (as ${q}${r}${s}) and its id
+// used to quickly update a tile props depending on its coordinates
+let tilePosMap: Map<string, string> = new Map();
+
+// Map of tile id to its Tile content for quick access
+let tileIdMap: Map<string, Tile> = new Map();
 
 let colorList = [
 	'darkred',
@@ -65,10 +64,10 @@ const getHexIdFromDepl = (
 	shift: TileShift
 ) => {
 	let tileCoord = `${curTile.q + shift.qShift}${curTile.r + shift.rShift}${curTile.s + shift.sShift}`;
-	if(hexMap.has(tileCoord)){
-		let t = hexMap.get(tileCoord);
-		if(t && !t.isHidden)
-			return t.id;
+	if(tilePosMap.has(tileCoord)){
+		let t = tilePosMap.get(tileCoord);
+		if(t)
+			return t;
 	}
 	return null;
 };
@@ -98,11 +97,21 @@ const getHex = (t: Tile) => {
 		// console.log(t.q, t.r, t.id);
 	};
 	hex.onclick = () => {
-		showNeighbors(t);
+		// showNeighbors(t);
+		t.stats.addWaterPerTick(2);
 	};
-	hex.innerHTML = `<div class="contents"></div>`;
+	hex.innerHTML = `<div class="contents">${(t.isHidden ? '' : t.stats.water)}</div>`;
 	return hex;
 };
+
+const updateHexContent = (id: string) => {
+	var hexHtml = document.getElementById(id);
+	if(hexHtml){
+		var t = tileIdMap.get(id);
+		if(t)
+			hexHtml.innerHTML = `<div class="contents">${t.stats.water}</div>`;
+	}
+}
 
 var d = document.getElementById('app');
 if (d) {
@@ -126,7 +135,8 @@ if (d) {
 	nbLines = nbHexPerLine;
 
 	for (let i = 0; i < nbLines; i++) {
-		tileList.push([]);
+		let c: HTMLElement = <HTMLDivElement>document.createElement('div');
+		c.classList = 'hex-container';
 		let line = i - hexagonalGridSize + 1;
 		for (let j = 0; j < nbHexPerLine; j++) {
 			let col = j - hexagonalGridSize + 1;
@@ -138,7 +148,7 @@ if (d) {
 				Math.abs(s) > hexagonalGridSize - 1 ||
 				Math.abs(q) > hexagonalGridSize - 1 ||
 				Math.abs(r) > hexagonalGridSize - 1;
-			tileList[i].push({
+			let t = {
 				line: line,
 				col: col,
 				r: r,
@@ -149,24 +159,61 @@ if (d) {
 				isHidden: isHidden,
 				id: id,
 				stats: new TileStats()
-			});
-			hexMap.set(`${q}${r}${s}`, { id: id, isHidden: isHidden });
-		}
-	}
-
-	tileList.forEach((l) => {
-		let c: HTMLElement = <HTMLDivElement>document.createElement('div');
-		c.classList = 'hex-container';
-		l.forEach((t) => {
+			};
+			if(!isHidden){
+				// we only store the position of the hex if it is shown
+				tilePosMap.set(`${q}${r}${s}`, id);
+				tileIdMap.set(id, t);
+			}
 			c.appendChild(getHex(t));
-		});
+		}
 		if (d) d.appendChild(c);
-	});
+	}
 
 	let b: HTMLElement = <HTMLButtonElement>document.createElement('button');
 	b.textContent = 'Tick';
 	b.onclick = () => {
-		console.log("tick");
+		execTick();
 	}
 	d.appendChild(b);
+
+	let br: HTMLElement = document.createElement('br');
+	d.appendChild(br);
+
+	let b1: HTMLElement = <HTMLButtonElement>document.createElement('button');
+	b1.textContent = 'Pause';
+	b1.onclick = () => {
+		window.clearTimeout(currentTimeout);
+	}
+	d.appendChild(b1);
 }
+
+let tilesToUpdate: string[] = []
+
+const execTick = () => {
+	tilesToUpdate = [];
+	tileIdMap.forEach(t => {
+		if(t.stats.hasTickAction){
+			t.stats.tickExec();
+			tilesToUpdate.push(t.id);
+		}
+	})
+
+	tilesToUpdate.forEach(t => {
+		updateHexContent(t);
+	});
+}
+
+var tickTimeMs = 1000;
+var currentTimeout: number;
+
+const mainProcess = () => {
+	execTick();
+	setTimer();
+};
+
+const setTimer = () => {
+	currentTimeout = window.setTimeout(mainProcess, tickTimeMs);
+};
+
+mainProcess();
