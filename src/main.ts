@@ -1,19 +1,6 @@
-import TileStats from './classes/TileStats';
+import Tile from './classes/Tile';
 import * as utils from './shared/utils';
 import './style/main.scss';
-
-interface Tile {
-	col: number;
-	line: number;
-	q: number;
-	r: number;
-	s: number;
-	color: string;
-	colorHover: string;
-	isHidden: boolean;
-	id: string;
-	stats: TileStats;
-}
 
 interface TileShift {
 	qShift: number;
@@ -113,8 +100,9 @@ const updateHexContent = (id: string) => {
 	}
 }
 
-var d = document.getElementById('app');
-if (d) {
+var dLeftBox = document.querySelector('#app .left-box');
+if (dLeftBox) {
+	let d = (dLeftBox as HTMLElement);
 	d.style = `--hex-width: ${hexWidth}px; 
 		--hex-height: ${hexHeight}px; 
 		--hex-margin-left: ${(-1 * hexWidth) / 4 + hexSpacing}px;
@@ -140,36 +128,21 @@ if (d) {
 		let line = i - hexagonalGridSize + 1;
 		for (let j = 0; j < nbHexPerLine; j++) {
 			let col = j - hexagonalGridSize + 1;
-			let r = line - (col - (col & 1)) / 2;
-			let q = col;
-			let s = -1 * q - r;
-			let id = utils.default.guid();
-			let isHidden =
-				Math.abs(s) > hexagonalGridSize - 1 ||
-				Math.abs(q) > hexagonalGridSize - 1 ||
-				Math.abs(r) > hexagonalGridSize - 1;
-			let t = {
-				line: line,
-				col: col,
-				r: r,
-				q: q,
-				s: s,
-				color: color,
-				colorHover: colorHover,
-				isHidden: isHidden,
-				id: id,
-				stats: new TileStats()
-			};
-			if(!isHidden){
+			let t = new Tile(line, col, hexagonalGridSize, color, colorHover);
+			if(!t.isHidden){
 				// we only store the position of the hex if it is shown
-				tilePosMap.set(`${q}${r}${s}`, id);
-				tileIdMap.set(id, t);
+				tilePosMap.set(`${t.q}${t.r}${t.s}`, t.id);
+				tileIdMap.set(t.id, t);
 			}
 			c.appendChild(getHex(t));
 		}
 		if (d) d.appendChild(c);
 	}
+}
 
+var dMenu = document.querySelector('#app .menu-box');
+if (dMenu) {
+	let d = (dMenu as HTMLElement);
 	let b: HTMLElement = <HTMLButtonElement>document.createElement('button');
 	b.textContent = 'Tick';
 	b.onclick = () => {
@@ -177,15 +150,19 @@ if (d) {
 	}
 	d.appendChild(b);
 
-	let br: HTMLElement = document.createElement('br');
-	d.appendChild(br);
-
 	let b1: HTMLElement = <HTMLButtonElement>document.createElement('button');
-	b1.textContent = 'Pause';
+	b1.textContent = 'Start';
 	b1.onclick = () => {
-		window.clearTimeout(currentTimeout);
+		mainProcess();
 	}
 	d.appendChild(b1);
+
+	let b2: HTMLElement = <HTMLButtonElement>document.createElement('button');
+	b2.textContent = 'Pause';
+	b2.onclick = () => {
+		window.clearTimeout(currentTimeout);
+	}
+	d.appendChild(b2);
 }
 
 let tilesToUpdate: string[] = []
@@ -215,5 +192,3 @@ const mainProcess = () => {
 const setTimer = () => {
 	currentTimeout = window.setTimeout(mainProcess, tickTimeMs);
 };
-
-mainProcess();
