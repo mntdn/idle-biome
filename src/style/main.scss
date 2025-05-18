@@ -1,7 +1,9 @@
-html, body {
+html,
+body {
     height: 100%;
     margin: 0;
 }
+
 * {
     box-sizing: border-box;
     --hex-fill-color: #ddd;
@@ -9,6 +11,7 @@ html, body {
     --background-color: white;
     --menu-height: 60px;
 }
+
 #app {
     --hex-width: 60px;
     --hex-height: var(--hex-width) * sin(60deg);
@@ -20,76 +23,90 @@ html, body {
     height: 100%;
     display: flex;
     flex-flow: row wrap;
-    
-    .menu-box{
+
+    .menu-box {
         flex: 4 100%;
         height: var(--menu-height);
+        border-bottom: 1px solid #ddd;
     }
-    .left-box{
+
+    .left-box {
         flex: 3 0px;
         height: calc(100% - var(--menu-height));
     }
-    .right-box{
+
+    .right-box {
         flex: 1 0px;
         height: calc(100% - var(--menu-height));
-    }
-}
-
-.hexagon {
-	display: inline-block;
-	position: relative;
-	width: var(--hex-width);
-    margin-left: var(--hex-margin-left);
-    margin-bottom: var(--hex-margin-bottom);
-    cursor: pointer;
-
-    &:before,
-    &:after {
-        content: '';
-        display: block;
-        width: 50%;
-        border: 0 solid transparent;
-    }
-    &:before {
-        border-bottom-color: var(--hex-fill-color);
-        border-width: 0 calc(var(--hex-width)/4) calc(var(--hex-height)/2);
-    }
-    &:after {
-        border-top-color: var(--hex-fill-color);
-        border-width: calc(var(--hex-height)/2) calc(var(--hex-width)/4) 0;
-    }
-    & > .contents {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 25%;
-        right: 25%;
+        border-left: 1px solid #ddd;
     }
 
-    &.low {
-        top: var(--hex-low-top);
-    }
+    .tiles-container {
+        text-align: center;
+        
+        .hex-line {
+            padding-left: 10px;
+            padding-top: var(--hex-container-pad-top);
+            width: 100%;
 
-    &:hover{
-        --hex-fill-color: var(--hex-fill-color-hover) !important;
-    }
+            .hexagon {
+                display: inline-block;
+                position: relative;
+                width: var(--hex-width);
+                margin-left: var(--hex-margin-left);
+                margin-bottom: var(--hex-margin-bottom);
+                cursor: pointer;
 
-    &.hidden {
-        cursor: default;
-        &:before {
-            border-bottom-color: var(--background-color);
+                &:before,
+                &:after {
+                    content: '';
+                    display: block;
+                    width: 50%;
+                    border: 0 solid transparent;
+                }
+
+                &:before {
+                    border-bottom-color: var(--hex-fill-color);
+                    border-width: 0 calc(var(--hex-width)/4) calc(var(--hex-height)/2);
+                }
+
+                &:after {
+                    border-top-color: var(--hex-fill-color);
+                    border-width: calc(var(--hex-height)/2) calc(var(--hex-width)/4) 0;
+                }
+
+                &>.contents {
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    left: 25%;
+                    right: 25%;
+                }
+
+                &.low {
+                    top: var(--hex-low-top);
+                }
+
+                &:hover {
+                    --hex-fill-color: var(--hex-fill-color-hover) !important;
+                }
+
+                &.hidden {
+                    cursor: default;
+
+                    &:before {
+                        border-bottom-color: var(--background-color);
+                    }
+
+                    &:after {
+                        border-top-color: var(--background-color);
+                    }
+
+                    &:hover {
+                        --hex-fill-color: var(--background-color) !important;
+                    }
+                }
+            }
         }
-        &:after {
-            border-top-color: var(--background-color);
-        }    
-        &:hover{
-            --hex-fill-color: var(--background-color) !important;
-        }    
     }
-}
-
-.hex-container{
-    padding-left: 10px;
-    padding-top: var(--hex-container-pad-top);
-    width: 100%;
 }

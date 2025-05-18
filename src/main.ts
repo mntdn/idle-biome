@@ -1,6 +1,7 @@
 import Tile from './classes/Tile';
-import * as utils from './shared/utils';
+import { ETileType } from "./enums/ETileType";
 import './style/main.scss';
+import state from './state';
 
 interface TileShift {
 	qShift: number;
@@ -8,43 +9,12 @@ interface TileShift {
 	sShift: number;
 }
 
-const hexSpacing = 2;
-const hexWidth = 60;
-const hexHeight = hexWidth * Math.sin((60 * Math.PI) / 180);
-
 // Map of tile q r s coords (as ${q}${r}${s}) and its id
 // used to quickly update a tile props depending on its coordinates
 let tilePosMap: Map<string, string> = new Map();
 
 // Map of tile id to its Tile content for quick access
 let tileIdMap: Map<string, Tile> = new Map();
-
-let colorList = [
-	'darkred',
-	'darksalmon',
-	'darkseagreen',
-	'darkslateblue',
-	'darkslategray',
-	'darkturquoise',
-	'darkviolet',
-	'deeppink',
-	'deepskyblue',
-	'dimgray',
-	'dodgerblue',
-	'firebrick',
-	'orchid',
-	'palegoldenrod',
-	'palegreen',
-	'paleturquoise',
-	'palevioletred',
-	'papayawhip',
-	'peachpuff',
-	'peru',
-	'pink',
-	'plum',
-	'powderblue',
-	'purple',
-];
 
 const getHexIdFromDepl = (
 	curTile: Tile,
@@ -82,6 +52,7 @@ const getHex = (t: Tile) => {
 	hex.style = `--hex-fill-color:${t.color};--hex-fill-color-hover:${t.colorHover};`;
 	hex.onmouseover = () => {
 		// console.log(t.q, t.r, t.id);
+		showTileDetails(t);
 	};
 	hex.onclick = () => {
 		// showNeighbors(t);
@@ -100,35 +71,45 @@ const updateHexContent = (id: string) => {
 	}
 }
 
+const showTileDetails = (t: Tile) => {
+	var detailsBox = document.querySelector('#app .right-box');
+	if (detailsBox) {
+		let d = (detailsBox as HTMLElement);
+		d.innerHTML = '';
+		let div: HTMLElement = <HTMLPreElement>document.createElement('pre');
+		div.style = '';
+		div.textContent = JSON.stringify(t, null, 2);
+		d.appendChild(div);
+	}
+}
+
 var dLeftBox = document.querySelector('#app .left-box');
 if (dLeftBox) {
 	let d = (dLeftBox as HTMLElement);
-	d.style = `--hex-width: ${hexWidth}px; 
-		--hex-height: ${hexHeight}px; 
-		--hex-margin-left: ${(-1 * hexWidth) / 4 + hexSpacing}px;
-		--hex-margin-bottom: ${-1 * hexSpacing}px;
-		--hex-low-top: ${hexHeight / 2 + hexSpacing}px;
-		--hex-container-pad-top: ${hexSpacing}px`;
+	d.style = `--hex-width: ${state.hexWidth}px; 
+		--hex-height: ${state.hexHeight}px; 
+		--hex-margin-left: ${(-1 * state.hexWidth) / 4 + state.hexSpacing}px;
+		--hex-margin-bottom: ${-1 * state.hexSpacing}px;
+		--hex-low-top: ${state.hexHeight / 2 + state.hexSpacing}px;
+		--hex-line-pad-top: ${state.hexSpacing}px`;
+	let divContainer: HTMLElement = <HTMLDivElement>document.createElement('div');
+	divContainer.classList = 'tiles-container';
 
 	var nbHexPerLine = Math.floor(
-		d.clientWidth / ((hexWidth * 3) / 4 + hexSpacing),
+		d.clientWidth / ((state.hexWidth * 3) / 4 + state.hexSpacing),
 	);
-	var nbLines = Math.floor(d.clientHeight / hexHeight);
-	var color = colorList[utils.default.getRandomInt(0, colorList.length)];
-	var colorHover = colorList[utils.default.getRandomInt(0, colorList.length)];
+	var nbLines = Math.floor(d.clientHeight / state.hexHeight);
 
-	// length of one of the sides of the hexagon
-	var hexagonalGridSize = 3;
-	nbHexPerLine = 2 * hexagonalGridSize - 1;
+	nbHexPerLine = 2 * state.hexagonalGridSize - 1;
 	nbLines = nbHexPerLine;
 
 	for (let i = 0; i < nbLines; i++) {
 		let c: HTMLElement = <HTMLDivElement>document.createElement('div');
-		c.classList = 'hex-container';
-		let line = i - hexagonalGridSize + 1;
+		c.classList = 'hex-line';
+		let line = i - state.hexagonalGridSize + 1;
 		for (let j = 0; j < nbHexPerLine; j++) {
-			let col = j - hexagonalGridSize + 1;
-			let t = new Tile(line, col, hexagonalGridSize, color, colorHover);
+			let col = j - state.hexagonalGridSize + 1;
+			let t = new Tile(line, col, ETileType.stone);
 			if(!t.isHidden){
 				// we only store the position of the hex if it is shown
 				tilePosMap.set(`${t.q}${t.r}${t.s}`, t.id);
@@ -136,8 +117,10 @@ if (dLeftBox) {
 			}
 			c.appendChild(getHex(t));
 		}
-		if (d) d.appendChild(c);
+		if (divContainer) divContainer.appendChild(c);
 	}
+	if(d)
+		d.appendChild(divContainer);
 }
 
 var dMenu = document.querySelector('#app .menu-box');
