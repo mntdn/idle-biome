@@ -1,28 +1,17 @@
 import Tile from './classes/Tile';
 import { ETileType } from "./enums/ETileType";
+import utils from "./shared/utils";
 import './style/main.scss';
 import state from './state';
-
-interface TileShift {
-	qShift: number;
-	rShift: number;
-	sShift: number;
-}
-
-// Map of tile q r s coords (as ${q}${r}${s}) and its id
-// used to quickly update a tile props depending on its coordinates
-let tilePosMap: Map<string, string> = new Map();
-
-// Map of tile id to its Tile content for quick access
-let tileIdMap: Map<string, Tile> = new Map();
+import TileShift from './interfaces/TileShift';
 
 const getHexIdFromDepl = (
 	curTile: Tile,
 	shift: TileShift
 ) => {
 	let tileCoord = `${curTile.q + shift.qShift}${curTile.r + shift.rShift}${curTile.s + shift.sShift}`;
-	if(tilePosMap.has(tileCoord)){
-		let t = tilePosMap.get(tileCoord);
+	if(state.tilePosMap.has(tileCoord)){
+		let t = state.tilePosMap.get(tileCoord);
 		if(t)
 			return t;
 	}
@@ -45,83 +34,55 @@ const showNeighbors = (t: Tile) => {
 	})
 }
 
-const getHex = (t: Tile) => {
-	let hex: HTMLElement = <HTMLDivElement>document.createElement('div');
-	hex.id = t.id;
-	hex.classList = `hexagon ${t.q % 2 !== 0 ? 'low' : ''} ${t.isHidden ? 'hidden' : ''}`;
-	hex.style = `--hex-fill-color:${t.color};--hex-fill-color-hover:${t.colorHover};`;
-	hex.onmouseover = () => {
-		// console.log(t.q, t.r, t.id);
-		showTileDetails(t);
-	};
-	hex.onclick = () => {
-		// showNeighbors(t);
-		t.stats.addWaterPerTick(2);
-	};
-	hex.innerHTML = `<div class="contents">${(t.isHidden ? '' : t.stats.water)}</div>`;
-	return hex;
-};
-
 const updateHexContent = (id: string) => {
 	var hexHtml = document.getElementById(id);
 	if(hexHtml){
-		var t = tileIdMap.get(id);
+		var t = state.tileIdMap.get(id);
 		if(t)
 			hexHtml.innerHTML = `<div class="contents">${t.stats.water}</div>`;
 	}
 }
 
 const showTileDetails = (t: Tile) => {
-	var detailsBox = document.querySelector('#app .right-box');
-	if (detailsBox) {
-		let d = (detailsBox as HTMLElement);
-		d.innerHTML = '';
-		let div: HTMLElement = <HTMLPreElement>document.createElement('pre');
-		div.style = '';
-		div.textContent = JSON.stringify(t, null, 2);
-		d.appendChild(div);
-	}
+	let d = utils.getBySelector('#app .right-box');
+	d.innerHTML = '';
+	let div: HTMLElement = <HTMLPreElement>document.createElement('pre');
+	div.style = '';
+	div.textContent = JSON.stringify(t, null, 2);
+	d.appendChild(div);
 }
 
-var dLeftBox = document.querySelector('#app .left-box');
-if (dLeftBox) {
-	let d = (dLeftBox as HTMLElement);
-	d.style = `--hex-width: ${state.hexWidth}px; 
-		--hex-height: ${state.hexHeight}px; 
-		--hex-margin-left: ${(-1 * state.hexWidth) / 4 + state.hexSpacing}px;
-		--hex-margin-bottom: ${-1 * state.hexSpacing}px;
-		--hex-low-top: ${state.hexHeight / 2 + state.hexSpacing}px;
-		--hex-line-pad-top: ${state.hexSpacing}px`;
-	let divContainer: HTMLElement = <HTMLDivElement>document.createElement('div');
-	divContainer.classList = 'tiles-container';
+let d = utils.getBySelector('#app .left-box');
+d.style = `--hex-width: ${state.hexWidth}px; 
+	--hex-height: ${state.hexHeight}px; 
+	--hex-margin-left: ${(-1 * state.hexWidth) / 4 + state.hexSpacing}px;
+	--hex-margin-bottom: ${-1 * state.hexSpacing}px;
+	--hex-low-top: ${state.hexHeight / 2 + state.hexSpacing}px;
+	--hex-line-pad-top: ${state.hexSpacing}px`;
+let divContainer: HTMLElement = <HTMLDivElement>document.createElement('div');
+divContainer.classList = 'tiles-container';
 
-	var nbHexPerLine = Math.floor(
-		d.clientWidth / ((state.hexWidth * 3) / 4 + state.hexSpacing),
-	);
-	var nbLines = Math.floor(d.clientHeight / state.hexHeight);
+var nbHexPerLine = Math.floor(
+	d.clientWidth / ((state.hexWidth * 3) / 4 + state.hexSpacing),
+);
+var nbLines = Math.floor(d.clientHeight / state.hexHeight);
 
-	nbHexPerLine = 2 * state.hexagonalGridSize - 1;
-	nbLines = nbHexPerLine;
+nbHexPerLine = 2 * state.hexagonalGridSize - 1;
+nbLines = nbHexPerLine;
 
-	for (let i = 0; i < nbLines; i++) {
-		let c: HTMLElement = <HTMLDivElement>document.createElement('div');
-		c.classList = 'hex-line';
-		let line = i - state.hexagonalGridSize + 1;
-		for (let j = 0; j < nbHexPerLine; j++) {
-			let col = j - state.hexagonalGridSize + 1;
-			let t = new Tile(line, col, ETileType.stone);
-			if(!t.isHidden){
-				// we only store the position of the hex if it is shown
-				tilePosMap.set(`${t.q}${t.r}${t.s}`, t.id);
-				tileIdMap.set(t.id, t);
-			}
-			c.appendChild(getHex(t));
-		}
-		if (divContainer) divContainer.appendChild(c);
+for (let i = 0; i < nbLines; i++) {
+	let c: HTMLElement = <HTMLDivElement>document.createElement('div');
+	c.classList = 'hex-line';
+	let line = i - state.hexagonalGridSize + 1;
+	for (let j = 0; j < nbHexPerLine; j++) {
+		let col = j - state.hexagonalGridSize + 1;
+		let t = new Tile(line, col, ETileType.stone);
+		t.onHover = () => showTileDetails(t)
+		c.appendChild(t.getHtml());
 	}
-	if(d)
-		d.appendChild(divContainer);
+	if (divContainer) divContainer.appendChild(c);
 }
+d.appendChild(divContainer);
 
 var dMenu = document.querySelector('#app .menu-box');
 if (dMenu) {
@@ -152,7 +113,7 @@ let tilesToUpdate: string[] = []
 
 const execTick = () => {
 	tilesToUpdate = [];
-	tileIdMap.forEach(t => {
+	state.tileIdMap.forEach(t => {
 		if(t.stats.hasTickAction){
 			t.stats.tickExec();
 			tilesToUpdate.push(t.id);

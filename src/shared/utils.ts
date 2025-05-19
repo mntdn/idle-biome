@@ -11,9 +11,19 @@ const guid = () => {
     );
 }
 
+const getBySelector = (selector: string): HTMLElement => {
+	var selResult = document.querySelector(selector);
+	if (selResult) {
+		return (selResult as HTMLElement);
+	}
+    console.error(`No element with selector ${selector}`);
+    return document.createElement('div');
+}
+
 const _ = {
     getRandomInt,
-    guid
+    guid,
+    getBySelector
 }
 
 export default _;
