@@ -11,6 +11,10 @@ const guid = () => {
     );
 }
 
+const round = (n: number) => {
+    return (Math.round(n * 1000) / 1000);
+}
+
 const getBySelector = (selector: string): HTMLElement => {
 	var selResult = document.querySelector(selector);
 	if (selResult) {
@@ -23,7 +27,8 @@ const getBySelector = (selector: string): HTMLElement => {
 const _ = {
     getRandomInt,
     guid,
-    getBySelector
+    getBySelector,
+    round
 }
 
 export default _;

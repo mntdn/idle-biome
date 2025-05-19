@@ -3,45 +3,6 @@ import { ETileType } from "./enums/ETileType";
 import utils from "./shared/utils";
 import './style/main.scss';
 import state from './state';
-import TileShift from './interfaces/TileShift';
-
-const getHexIdFromDepl = (
-	curTile: Tile,
-	shift: TileShift
-) => {
-	let tileCoord = `${curTile.q + shift.qShift}${curTile.r + shift.rShift}${curTile.s + shift.sShift}`;
-	if(state.tilePosMap.has(tileCoord)){
-		let t = state.tilePosMap.get(tileCoord);
-		if(t)
-			return t;
-	}
-	return null;
-};
-
-const showNeighbors = (t: Tile) => {
-	let allDepl: TileShift[] = [
-		{qShift: 1, rShift: 0, sShift: -1}, {qShift:1, rShift:-1, sShift:0}, {qShift:0, rShift:-1, sShift:+1}, 
-		{qShift:-1, rShift:0, sShift:1}, {qShift:-1, rShift:+1, sShift:0}, {qShift:0, rShift:1, sShift:-1}, 
-	];
-	allDepl.forEach(d => {
-		let h = getHexIdFromDepl(t, d);
-		if(h){
-			var hexHtml = document.getElementById(h);
-			if(hexHtml){
-				hexHtml.style = `--hex-fill-color:#ccc;--hex-fill-color-hover:#ddd;`
-			}
-		}
-	})
-}
-
-const updateHexContent = (id: string) => {
-	var hexHtml = document.getElementById(id);
-	if(hexHtml){
-		var t = state.tileIdMap.get(id);
-		if(t)
-			hexHtml.innerHTML = `<div class="contents">${t.stats.water}</div>`;
-	}
-}
 
 const showTileDetails = (t: Tile) => {
 	let d = utils.getBySelector('#app .right-box');
@@ -109,20 +70,13 @@ if (dMenu) {
 	d.appendChild(b2);
 }
 
-let tilesToUpdate: string[] = []
-
 const execTick = () => {
-	tilesToUpdate = [];
 	state.tileIdMap.forEach(t => {
 		if(t.stats.hasTickAction){
 			t.stats.tickExec();
-			tilesToUpdate.push(t.id);
+			t.updateContent();
 		}
 	})
-
-	tilesToUpdate.forEach(t => {
-		updateHexContent(t);
-	});
 }
 
 var tickTimeMs = 1000;

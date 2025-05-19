@@ -11,7 +11,7 @@ interface StatProperties {
 }
 
 export default class TileStats {
-    
+
 	water: number;
 	waterPerTick: number;
     waterAbsorptionPerTick: number;
@@ -31,7 +31,6 @@ export default class TileStats {
     addWaterPerTick(wpt: number) {
         this.waterPerTick += wpt;
         this.hasTickAction = true;
-        console.log(this.waterPerTick);
     }
 
     tickExec() {
