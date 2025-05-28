@@ -13,6 +13,8 @@ export default class Tile {
     s: number;
     color: string;
     colorHover: string;
+	colorBorder: string;
+	borderSize: number;
     isHidden: boolean;
     id: string;
     stats: TileStats;
@@ -29,6 +31,8 @@ export default class Tile {
         this.id = utils.guid();
         this.color = this.getColorByType(false);
         this.colorHover = this.getColorByType(true);
+        this.colorBorder = "grey";
+		this.borderSize = 4;
         this.isHidden =
             Math.abs(this.s) > state.hexagonalGridSize - 1 ||
             Math.abs(this.q) > state.hexagonalGridSize - 1 ||
@@ -68,11 +72,15 @@ export default class Tile {
         return `<div class="hexagon-inner">${this.isHidden ? '' : utils.round(this.stats.water)}</div>`
     }
 
+	private getStyle () {
+		return `--hex-fill-color:${this.color};--hex-fill-color-hover:${this.colorHover};--hex-border-color: ${this.colorBorder};--hex-border:${this.borderSize}px`;
+	}
+
 	getHtml() {
 		let hex: HTMLElement = <HTMLDivElement>document.createElement('div');
 		hex.id = this.id;
 		hex.classList = `hexagon ${this.q % 2 !== 0 ? 'low' : ''} ${this.isHidden ? 'hidden' : ''}`;
-		hex.style = `--hex-fill-color:${this.color};--hex-fill-color-hover:${this.colorHover};--hex-border-color: ${this.color}`;
+		hex.style = this.getStyle();
 		hex.onmouseover = () => {
 			this.onHover();
 			this.applyToNeighbors((t: Tile) => { t.stats.addWaterPerTick(0.1) })
@@ -80,6 +88,9 @@ export default class Tile {
 		hex.onclick = () => {
 			// showNeighbors(t);
 			this.stats.addWaterPerTick(2);
+			this.colorBorder = "darkred";
+			this.borderSize *= 2;
+			hex.style = this.getStyle();
 		};
 		hex.innerHTML = this.getContent();
 		return hex;

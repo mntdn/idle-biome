@@ -26,7 +26,7 @@ for (let i = 0; i < nbLines; i++) {
 	let line = i - state.hexagonalGridSize + 1;
 	for (let j = 0; j < nbHexPerLine; j++) {
 		let col = j - state.hexagonalGridSize + 1;
-		let t = new Tile(line, col, ETileType.stone);
+		let t = new Tile(line, col, ETileType.water);
 		t.onHover = () => showTileDetails(t)
 		c.appendChild(t.getHtml());
 	}
