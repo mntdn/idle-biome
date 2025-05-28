@@ -65,24 +65,25 @@ export default class Tile {
     }
 
     private getContent (){
-        return `<div class="contents">${this.isHidden ? '' : utils.round(this.stats.water)}</div>`
+        return `<div class="hexagon-inner">${this.isHidden ? '' : utils.round(this.stats.water)}</div>`
     }
 
-    getHtml() {
-        let hex: HTMLElement = <HTMLDivElement>document.createElement('div');
-        hex.id = this.id;
-        hex.classList = `hexagon ${this.q % 2 !== 0 ? 'low' : ''} ${this.isHidden ? 'hidden' : ''}`;
-        hex.style = `--hex-fill-color:${this.color};--hex-fill-color-hover:${this.colorHover};`;
-        hex.onmouseover = () => {
-            this.onHover();
-        };
-        hex.onclick = () => {
-            this.stats.addWaterPerTick(2);
-            this.applyToNeighbors((t: Tile) => { t.stats.addWaterPerTick(0.1) })
-        };
-        hex.innerHTML = this.getContent();
-        return hex;
-    }
+	getHtml() {
+		let hex: HTMLElement = <HTMLDivElement>document.createElement('div');
+		hex.id = this.id;
+		hex.classList = `hexagon ${this.q % 2 !== 0 ? 'low' : ''} ${this.isHidden ? 'hidden' : ''}`;
+		hex.style = `--hex-fill-color:${this.color};--hex-fill-color-hover:${this.colorHover};--hex-border-color: ${this.color}`;
+		hex.onmouseover = () => {
+			this.onHover();
+			this.applyToNeighbors((t: Tile) => { t.stats.addWaterPerTick(0.1) })
+		};
+		hex.onclick = () => {
+			// showNeighbors(t);
+			this.stats.addWaterPerTick(2);
+		};
+		hex.innerHTML = this.getContent();
+		return hex;
+	}
 
     updateContent() {
         var hexHtml = document.getElementById(this.id);

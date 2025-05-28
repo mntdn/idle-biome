@@ -1,112 +1,134 @@
 html,
 body {
-    height: 100%;
-    margin: 0;
+	height: 100%;
+	margin: 0;
 }
 
 * {
-    box-sizing: border-box;
-    --hex-fill-color: #ddd;
-    --hex-fill-color-hover: #ccc;
-    --background-color: white;
-    --menu-height: 60px;
+	box-sizing: border-box;
+	--background-color: white;
+	--menu-height: 60px;
 }
 
 #app {
-    --hex-width: 60px;
-    --hex-height: var(--hex-width) * sin(60deg);
-    --hex-margin-left: -12px;
-    --hex-margin-bottom: -2px;
-    --hex-low-top: 26px;
-    --hex-container-pad-top: 2px;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-flow: row wrap;
+	--hex-width: 60px;
+	--hex-border: 4px;
+	--hex-spacing: 0px;
+	--hex-spacing-left: calc(var(--hex-spacing) * sin(60deg));
+	--hex-height: calc(var(--hex-width) * sin(60deg));
+	--hex-width-inner: calc(var(--hex-width) - calc(2 * var(--hex-border)));
+	--hex-height-inner: calc(var(--hex-width-inner) * sin(60deg));
+	--hex-margin-left: calc(
+		calc(-1 * calc(var(--hex-width) / 4)) + var(--hex-spacing-left)
+	);
+	--hex-margin-bottom: calc(-1 * var(--hex-spacing));
+	--hex-low-top: calc(calc(var(--hex-height) / 2) + var(--hex-spacing-left));
+	--hex-line-pad-top: var(--hex-spacing);
+	--hex-container-pad-top: calc(-1 * var(--hex-spacing-left));
 
-    .menu-box {
-        flex: 4 100%;
-        height: var(--menu-height);
-        border-bottom: 1px solid #ddd;
-    }
+	--hex-fill-color: #ddd;
+	--hex-fill-color-hover: #ccc;
+    --hex-border-color: darkred;
 
-    .left-box {
-        flex: 3 0px;
-        height: calc(100% - var(--menu-height));
-    }
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-flow: row wrap;
 
-    .right-box {
-        flex: 1 0px;
-        height: calc(100% - var(--menu-height));
-        border-left: 1px solid #ddd;
-    }
+	.menu-box {
+		flex: 4 100%;
+		height: var(--menu-height);
+		border-bottom: 1px solid #ddd;
+	}
 
-    .tiles-container {
-        text-align: center;
-        
-        .hex-line {
-            padding-left: 10px;
-            padding-top: var(--hex-container-pad-top);
-            width: 100%;
+	.left-box {
+		flex: 3 0px;
+		height: calc(100% - var(--menu-height));
+	}
 
-            .hexagon {
-                display: inline-block;
-                position: relative;
-                width: var(--hex-width);
-                margin-left: var(--hex-margin-left);
-                margin-bottom: var(--hex-margin-bottom);
-                cursor: pointer;
+	.right-box {
+		flex: 1 0px;
+		height: calc(100% - var(--menu-height));
+		border-left: 1px solid #ddd;
+	}
 
-                &:before,
-                &:after {
-                    content: '';
-                    display: block;
-                    width: 50%;
-                    border: 0 solid transparent;
+	.tiles-container {
+		text-align: center;
+
+		.hex-line {
+			padding-left: 10px;
+			padding-top: var(--hex-container-pad-top);
+			width: 100%;
+            height: calc(var(--hex-spacing) + var(--hex-height));
+
+			.hexagon {
+				position: relative;
+				display: inline-block;
+				width: var(--hex-width);
+				height: var(--hex-height);
+				background: var(--hex-border-color);
+				margin-left: var(--hex-margin-left);
+				margin-bottom: var(--hex-margin-bottom);
+				-webkit-clip-path: polygon(
+					25% 0%,
+					75% 0%,
+					100% 50%,
+					75% 100%,
+					25% 100%,
+					0% 50%
+				);
+				clip-path: polygon(
+					25% 0%,
+					75% 0%,
+					100% 50%,
+					75% 100%,
+					25% 100%,
+					0% 50%
+				);
+				&.low {
+					top: var(--hex-low-top);
+				}
+
+				&.hidden {
+					display: none;
+				}
+
+                &:hover{
+				    background: var(--hex-fill-color-hover);
+                    cursor: pointer;
                 }
 
-                &:before {
-                    border-bottom-color: var(--hex-fill-color);
-                    border-width: 0 calc(var(--hex-width)/4) calc(var(--hex-height)/2);
-                }
+				.hexagon-inner {
+					position: absolute;
+					width: var(--hex-width-inner);
+					height: var(--hex-height-inner);
+					background: var(--hex-fill-color);
+					-webkit-clip-path: polygon(
+						25% 0%,
+						75% 0%,
+						100% 50%,
+						75% 100%,
+						25% 100%,
+						0% 50%
+					);
+					clip-path: polygon(
+						25% 0%,
+						75% 0%,
+						100% 50%,
+						75% 100%,
+						25% 100%,
+						0% 50%
+					);
+					top: calc(var(--hex-border) * sin(60deg));
+					left: var(--hex-border);
 
-                &:after {
-                    border-top-color: var(--hex-fill-color);
-                    border-width: calc(var(--hex-height)/2) calc(var(--hex-width)/4) 0;
-                }
-
-                &>.contents {
-                    position: absolute;
-                    top: 0;
-                    bottom: 0;
-                    left: 25%;
-                    right: 25%;
-                }
-
-                &.low {
-                    top: var(--hex-low-top);
-                }
-
-                &:hover {
-                    --hex-fill-color: var(--hex-fill-color-hover) !important;
-                }
-
-                &.hidden {
-                    cursor: default;
-
-                    &:before {
-                        border-bottom-color: var(--background-color);
+                    &:hover{
+                        background: var(--hex-fill-color-hover);
+                        cursor: pointer;
                     }
 
-                    &:after {
-                        border-top-color: var(--background-color);
-                    }
-
-                    &:hover {
-                        --hex-fill-color: var(--background-color) !important;
-                    }
-                }
-            }
-        }
-    }
+				}
+			}
+		}
+	}
 }
