@@ -68,7 +68,7 @@ export default class Tile {
 		let hex: HTMLElement = <HTMLDivElement>document.createElement('div');
 		hex.id = this.id;
 		hex.classList = `hexagon ${this.q % 2 !== 0 ? 'low' : ''} ${this.isHidden ? 'hidden' : ''}`;
-		hex.style = `--hex-fill-color:${this.color};--hex-fill-color-hover:${this.colorHover};`;
+		hex.style = `--hex-fill-color:${this.color};--hex-fill-color-hover:${this.colorHover};--hex-border-color: ${this.color}`;
 		hex.onmouseover = () => {
 			this.onHover();
 		};
@@ -76,7 +76,7 @@ export default class Tile {
 			// showNeighbors(t);
 			this.stats.addWaterPerTick(2);
 		};
-		hex.innerHTML = `<div class="contents">${this.isHidden ? '' : this.stats.water}</div>`;
+		hex.innerHTML = `<div class="hexagon-inner"></div>`;
 		return hex;
 	}
 

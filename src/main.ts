@@ -53,22 +53,11 @@ const showTileDetails = (t: Tile) => {
 }
 
 let d = utils.getBySelector('#app .left-box');
-d.style = `--hex-width: ${state.hexWidth}px; 
-	--hex-height: ${state.hexHeight}px; 
-	--hex-margin-left: ${(-1 * state.hexWidth) / 4 + state.hexSpacing}px;
-	--hex-margin-bottom: ${-1 * state.hexSpacing}px;
-	--hex-low-top: ${state.hexHeight / 2 + state.hexSpacing}px;
-	--hex-line-pad-top: ${state.hexSpacing}px`;
 let divContainer: HTMLElement = <HTMLDivElement>document.createElement('div');
 divContainer.classList = 'tiles-container';
 
-var nbHexPerLine = Math.floor(
-	d.clientWidth / ((state.hexWidth * 3) / 4 + state.hexSpacing),
-);
-var nbLines = Math.floor(d.clientHeight / state.hexHeight);
-
-nbHexPerLine = 2 * state.hexagonalGridSize - 1;
-nbLines = nbHexPerLine;
+var nbHexPerLine = 2 * state.hexagonalGridSize - 1;
+var nbLines = nbHexPerLine;
 
 for (let i = 0; i < nbLines; i++) {
 	let c: HTMLElement = <HTMLDivElement>document.createElement('div');
