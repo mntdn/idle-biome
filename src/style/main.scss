@@ -13,11 +13,9 @@ body {
 #app {
 	--hex-width: 80px;
 	--hex-border: 2px;
-	--hex-spacing: 0px;
+	--hex-spacing: -0.1px;
 	--hex-spacing-left: calc(var(--hex-spacing) * sin(60deg));
 	--hex-height: calc(var(--hex-width) * sin(60deg));
-	--hex-width-inner: calc(var(--hex-width) - var(--hex-border));
-	--hex-height-inner: calc(var(--hex-width-inner) * sin(60deg));
 	--hex-margin-left: calc(
 		calc(-1 * calc(var(--hex-width) / 4)) + var(--hex-spacing-left)
 	);
@@ -98,6 +96,8 @@ body {
                 }
 
 				.hexagon-inner {
+                    --hex-width-inner: calc(var(--hex-width) - calc(2 * var(--hex-border)));
+                    --hex-height-inner: calc(var(--hex-width-inner) * sin(60deg));
 					position: absolute;
 					width: var(--hex-width-inner);
 					height: var(--hex-height-inner);
@@ -118,8 +118,8 @@ body {
 						25% 100%,
 						0% 50%
 					);
-					top: calc(calc(var(--hex-border) / 2) * sin(60deg));
-					left: calc(var(--hex-border) / 2);
+					top: calc(var(--hex-border) * sin(60deg));
+					left: var(--hex-border);
 
                     &:hover{
                         background: var(--hex-fill-color-hover);

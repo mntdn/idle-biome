@@ -89,7 +89,7 @@ export default class Tile {
 			// showNeighbors(t);
 			this.stats.addWaterPerTick(2);
 			this.colorBorder = "darkred";
-			this.borderSize *= 2;
+			// this.borderSize *= 2;
 			hex.style = this.getStyle();
 		};
 		hex.innerHTML = this.getContent();
