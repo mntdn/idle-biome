@@ -1,3 +1,4 @@
+import Player from "./classes/Player";
 import Tile from "./classes/Tile";
 
 // The game state
@@ -11,6 +12,8 @@ class State {
 
     // Map of tile id to its Tile content for quick access
     tileIdMap: Map<string, Tile> = new Map();
+
+    player: Player = new Player();
     
     constructor() {
         this.hexagonalGridSize = 3;

@@ -3,14 +3,13 @@ import utils from '../shared/utils';
 import TileStats from './TileStats';
 import state from '../state';
 import TileShift from '../interfaces/TileShift';
+import TilePos from './TilePos';
 
 export default class Tile {
     tileType: ETileType;
     col: number;
     line: number;
-    q: number;
-    r: number;
-    s: number;
+	position: TilePos;
     color: string;
     colorHover: string;
 	colorBorder: string;
@@ -18,6 +17,7 @@ export default class Tile {
     isHidden: boolean;
     id: string;
     stats: TileStats;
+	needsUpdate: boolean;
 
     onHover: () => void;
 
@@ -25,23 +25,23 @@ export default class Tile {
         this.tileType = tileType;
         this.line = line;
         this.col = col;
-        this.r = line - (col - (col & 1)) / 2;
-        this.q = col;
-        this.s = -1 * this.q - this.r;
+		let r = line - (col - (col & 1)) / 2;
+		this.position = new TilePos(col, r, -1 * col - r);
         this.id = utils.guid();
         this.color = this.getColorByType(false);
         this.colorHover = this.getColorByType(true);
         this.colorBorder = "grey";
 		this.borderSize = 4;
         this.isHidden =
-            Math.abs(this.s) > state.hexagonalGridSize - 1 ||
-            Math.abs(this.q) > state.hexagonalGridSize - 1 ||
-            Math.abs(this.r) > state.hexagonalGridSize - 1;
+            Math.abs(this.position.s) > state.hexagonalGridSize - 1 ||
+            Math.abs(this.position.q) > state.hexagonalGridSize - 1 ||
+            Math.abs(this.position.r) > state.hexagonalGridSize - 1;
         this.stats = new TileStats();
         this.onHover = () => { };
+		this.needsUpdate = false;
         if (!this.isHidden) {
             // we only store the position of the hex if it is shown
-            state.tilePosMap.set(`${this.q}${this.r}${this.s}`, this.id);
+            state.tilePosMap.set(`${this.position.q}${this.position.r}${this.position.s}`, this.id);
             state.tileIdMap.set(this.id, this);
         }
     }
@@ -69,7 +69,12 @@ export default class Tile {
     }
 
     private getContent (){
-        return `<div class="hexagon-inner">${this.isHidden ? '' : utils.round(this.stats.water)}</div>`
+		let result = '';
+        if(!this.isHidden) {
+			if(this.position.isEqual(state.player.currentPosition))
+				result = '@';
+		}
+		return result;
     }
 
 	private getStyle () {
@@ -79,7 +84,7 @@ export default class Tile {
 	getHtml() {
 		let hex: HTMLElement = <HTMLDivElement>document.createElement('div');
 		hex.id = this.id;
-		hex.classList = `hexagon ${this.q % 2 !== 0 ? 'low' : ''} ${this.isHidden ? 'hidden' : ''}`;
+		hex.classList = `hexagon ${this.position.q % 2 !== 0 ? 'low' : ''} ${this.isHidden ? 'hidden' : ''}`;
 		hex.style = this.getStyle();
 		hex.onmouseover = () => {
 			this.onHover();
@@ -91,20 +96,26 @@ export default class Tile {
 			this.colorBorder = "darkred";
 			// this.borderSize *= 2;
 			hex.style = this.getStyle();
+			state.player.moveTo(this.position);
+			this.needsUpdate = true;
 		};
-		hex.innerHTML = this.getContent();
+		let innerHex: HTMLElement = <HTMLDivElement>document.createElement('div');
+		innerHex.id = this.id + 'IN';
+		innerHex.classList = "hexagon-inner";
+		innerHex.innerHTML = this.getContent();
+		hex.appendChild(innerHex);
 		return hex;
 	}
 
     updateContent() {
-        var hexHtml = document.getElementById(this.id);
+        var hexHtml = document.getElementById(this.id + 'IN');
         if(hexHtml)
             hexHtml.innerHTML = this.getContent();
-
+		this.needsUpdate = false;
     }
 
     private getHexIdFromDepl(shift: TileShift) {
-        let tileCoord = `${this.q + shift.qShift}${this.r + shift.rShift}${this.s + shift.sShift}`;
+        let tileCoord = `${this.position.q + shift.qShift}${this.position.r + shift.rShift}${this.position.s + shift.sShift}`;
         if (state.tilePosMap.has(tileCoord)) {
             let t = state.tilePosMap.get(tileCoord);
             if (t)

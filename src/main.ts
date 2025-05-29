@@ -61,10 +61,13 @@ if (dMenu) {
 
 const execTick = () => {
 	state.tileIdMap.forEach(t => {
+		let toUpdate = false;
 		if(t.stats.hasTickAction){
 			t.stats.tickExec();
-			t.updateContent();
+			toUpdate = true;
 		}
+		if(toUpdate || t.needsUpdate)
+			t.updateContent();
 	})
 }
 
