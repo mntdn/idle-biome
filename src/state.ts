@@ -1,5 +1,7 @@
+import Line from "./classes/Line";
 import Player from "./classes/Player";
 import Tile from "./classes/Tile";
+import { Point } from "./interfaces/Point";
 
 // The game state
 class State {
@@ -14,6 +16,8 @@ class State {
     tileIdMap: Map<string, Tile> = new Map();
 
     player: Player = new Player();
+
+    line: Line = new Line();
     
     constructor() {
         this.hexagonalGridSize = 3;
