@@ -21,6 +21,8 @@ export default class Tile {
     cost: number; // cost of traversing for path finding
 	needsUpdate: boolean;
 
+    pfResult: number;
+
 	onHover: () => void;
 	onClick: () => void;
 
@@ -44,6 +46,7 @@ export default class Tile {
 		this.onHover = () => {};
 		this.onClick = () => {};
 		this.needsUpdate = false;
+        this.pfResult = 0;
 		if (!this.isHidden) {
 			// we only store the position of the hex if it is shown
 			state.tilePosMap.set(
@@ -81,7 +84,7 @@ export default class Tile {
 		if (!this.isHidden) {
 			if (this.position.isEqual(state.player.currentPosition))
 				result = '@';
-			result += '<br />' + utils.round(this.stats.water);
+			result += '<br />' + utils.round(this.pfResult);
 		}
 		return result;
 	}
@@ -103,14 +106,15 @@ export default class Tile {
 		};
 		hex.onclick = () => {
             this.onClick();
+            state.currentTile = this;
 			// showNeighbors(t);
 			this.stats.addWaterPerTick(2);
 			this.colorBorder = 'darkred';
 			// this.borderSize *= 2;
 			hex.style = this.getStyle();
 			state.player.moveTo(this.position);
-			state.line.addPoint(this.getPixelCoords());
-			state.line.drawLine();
+			// state.line.addPoint(this.getPixelCoords());
+			// state.line.drawLine();
 			this.needsUpdate = true;
 		};
 		let innerHex: HTMLElement = <HTMLDivElement>(
@@ -124,6 +128,8 @@ export default class Tile {
 	}
 
 	updateContent() {
+		var hex = document.getElementById(this.id);
+        if(hex) hex.style = this.getStyle();
 		var hexHtml = document.getElementById(this.id + 'IN');
 		if (hexHtml) hexHtml.innerHTML = this.getContent();
 		this.needsUpdate = false;

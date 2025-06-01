@@ -32,7 +32,8 @@ export default class Line {
                     left: ${this.coords[0].x}px; 
                     top: ${this.coords[0].y}px; 
                     width: ${w}px; height: ${stroke}px; 
-                    background-color: red;
+                    background-color: purple;
+                    background: linear-gradient(90deg,rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 1) 100%);
                     transform: rotate(${angle}rad);
                     transform-origin: 0% 0%;`;
 				root.appendChild(d);

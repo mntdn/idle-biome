@@ -4,6 +4,7 @@ import utils from "./shared/utils";
 import './style/main.scss';
 import state from './state';
 import TilePos from './classes/TilePos';
+import Line from './classes/Line';
 
 interface PriorityQueue {
 	position: TilePos;
@@ -53,8 +54,34 @@ const findPath = (start: TilePos, end: TilePos) => {
 			break;
 		}
 	}
-	console.log(cameFrom);
-	console.log(costSoFar);
+	// console.log(cameFrom);
+	// console.log(costSoFar);
+	costSoFar.forEach((v, k, m) => {
+		console.log(v, k);
+		let t = utils.getTileByPos(k);
+		if(t){
+			t.pfResult = v;
+			t.needsUpdate = true;
+		}
+	})
+	cameFrom.forEach((from, to, m) => {
+		console.log(from, to);
+		if(from) {
+			const l = new Line();
+			let tFrom = utils.getTileByPos(from!);
+			let tTo = utils.getTileByPos(to);
+			if(tFrom && tTo){
+				l.addPoint(tFrom.getPixelCoords());
+				l.addPoint(tTo.getPixelCoords());
+				l.drawLine();
+			}
+		}
+		// let t = utils.getTileByPos(k);
+		// if(t){
+		// 	t.pfResult = v;
+		// 	t.needsUpdate = true;
+		// }
+	})
 }
 
 const showTileDetails = (t: Tile) => {
@@ -82,11 +109,11 @@ for (let i = 0; i < nbLines; i++) {
 		let t = new Tile(line, col, ETileType.water);
 		t.onHover = () => showTileDetails(t)
 		t.onClick = () => {
-			pathPos.push(t.position);
-			if(pathPos.length == 2){
-				findPath(pathPos[0], pathPos[1]);
-				pathPos = [];
-			}
+			// pathPos.push(t.position);
+			// if(pathPos.length == 2){
+			// 	findPath(pathPos[0], pathPos[1]);
+			// 	pathPos = [];
+			// }
 		}
 		c.appendChild(t.getHtml());
 	}
@@ -117,6 +144,30 @@ if (dMenu) {
 		window.clearTimeout(currentTimeout);
 	}
 	d.appendChild(b2);
+
+	let b3: HTMLElement = <HTMLButtonElement>document.createElement('button');
+	b3.textContent = 'Wall';
+	b3.onclick = () => {
+		if(state.currentTile){
+			state.currentTile.tileType = ETileType.stone;
+			state.currentTile.cost = 10;
+			state.currentTile.needsUpdate;
+		}
+	}
+	d.appendChild(b3);
+
+	let b4: HTMLElement = <HTMLButtonElement>document.createElement('button');
+	b4.textContent = 'Path Start/End';
+	b4.onclick = () => {
+		if(state.currentTile){
+			pathPos.push(state.currentTile.position);
+			if(pathPos.length == 2){
+				findPath(pathPos[0], pathPos[1]);
+				pathPos = [];
+			}
+		}
+	}
+	d.appendChild(b4);
 }
 
 const execTick = () => {

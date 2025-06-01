@@ -18,9 +18,10 @@ class State {
     player: Player = new Player();
 
     line: Line = new Line();
+    currentTile: Tile | null = null;
     
     constructor() {
-        this.hexagonalGridSize = 3;
+        this.hexagonalGridSize = 5;
     }
 }
 
