@@ -3,6 +3,59 @@ import { ETileType } from "./enums/ETileType";
 import utils from "./shared/utils";
 import './style/main.scss';
 import state from './state';
+import TilePos from './classes/TilePos';
+
+interface PriorityQueue {
+	position: TilePos;
+	priority: number;
+}
+
+let pathPos: TilePos[] = [];
+
+const distance = (a: TilePos, b: TilePos): number => {
+	const vec: TilePos = new TilePos(a.q - b.q, a.r - b.r, a.s - b.s);
+	return (Math.abs(vec.q) + Math.abs(vec.r) + Math.abs(vec.s)) / 2;
+}
+
+const findPath = (start: TilePos, end: TilePos) => {
+	const frontier: PriorityQueue[] = [];
+	frontier.push({
+		position: start,
+		priority: 0
+	})
+	const cameFrom: Map<TilePos, TilePos | null> = new Map();
+	const costSoFar: Map<TilePos, number> = new Map();
+	cameFrom.set(start, null);
+	costSoFar.set(start, 0);
+
+	while (frontier.length > 0) {
+		let current = frontier.shift();
+		if (current!.position == end)
+			break;
+
+		let curPos = utils.getTileByPos(current!.position)
+		if (curPos) {
+			let neighbors = curPos.getNeighbors();
+			neighbors.forEach((next) => {
+				let newCost = costSoFar.get(curPos.position)! + curPos.cost;
+				if (!costSoFar.has(next.position) || newCost < costSoFar.get(next.position)!) {
+					costSoFar.set(next.position, newCost);
+					let prio = newCost + distance(end, next.position);
+					frontier.push({
+						position: next.position,
+						priority: prio
+					});
+					cameFrom.set(next.position, curPos.position)
+				}
+			})
+		} else {
+			console.error("Problem with pathfinding at", current!.position);
+			break;
+		}
+	}
+	console.log(cameFrom);
+	console.log(costSoFar);
+}
 
 const showTileDetails = (t: Tile) => {
 	let d = utils.getBySelector('#app .right-box');
@@ -28,6 +81,13 @@ for (let i = 0; i < nbLines; i++) {
 		let col = j - state.hexagonalGridSize + 1;
 		let t = new Tile(line, col, ETileType.water);
 		t.onHover = () => showTileDetails(t)
+		t.onClick = () => {
+			pathPos.push(t.position);
+			if(pathPos.length == 2){
+				findPath(pathPos[0], pathPos[1]);
+				pathPos = [];
+			}
+		}
 		c.appendChild(t.getHtml());
 	}
 	if (divContainer) divContainer.appendChild(c);
@@ -62,11 +122,11 @@ if (dMenu) {
 const execTick = () => {
 	state.tileIdMap.forEach(t => {
 		let toUpdate = false;
-		if(t.stats.hasTickAction){
+		if (t.stats.hasTickAction) {
 			t.stats.tickExec();
 			toUpdate = true;
 		}
-		if(toUpdate || t.needsUpdate)
+		if (toUpdate || t.needsUpdate)
 			t.updateContent();
 	})
 }

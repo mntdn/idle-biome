@@ -18,9 +18,11 @@ export default class Tile {
 	isHidden: boolean;
 	id: string;
 	stats: TileStats;
+    cost: number; // cost of traversing for path finding
 	needsUpdate: boolean;
 
 	onHover: () => void;
+	onClick: () => void;
 
 	constructor(line: number, col: number, tileType: ETileType) {
 		this.tileType = tileType;
@@ -38,7 +40,9 @@ export default class Tile {
 			Math.abs(this.position.q) > state.hexagonalGridSize - 1 ||
 			Math.abs(this.position.r) > state.hexagonalGridSize - 1;
 		this.stats = new TileStats();
+        this.cost = 1;
 		this.onHover = () => {};
+		this.onClick = () => {};
 		this.needsUpdate = false;
 		if (!this.isHidden) {
 			// we only store the position of the hex if it is shown
@@ -98,6 +102,7 @@ export default class Tile {
 			// });
 		};
 		hex.onclick = () => {
+            this.onClick();
 			// showNeighbors(t);
 			this.stats.addWaterPerTick(2);
 			this.colorBorder = 'darkred';
