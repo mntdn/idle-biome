@@ -16,6 +16,7 @@ export default class Tile {
 	colorBorder: string;
 	borderSize: number;
 	isHidden: boolean;
+	isTraversable: boolean;
 	id: string;
 	stats: TileStats;
     cost: number; // cost of traversing for path finding
@@ -43,6 +44,7 @@ export default class Tile {
 			Math.abs(this.position.r) > state.hexagonalGridSize - 1;
 		this.stats = new TileStats();
         this.cost = 1;
+		this.isTraversable = !this.isHidden;
 		this.onHover = () => {};
 		this.onClick = () => {};
 		this.needsUpdate = false;
@@ -113,8 +115,8 @@ export default class Tile {
 			// this.borderSize *= 2;
 			hex.style = this.getStyle();
 			state.player.moveTo(this.position);
-			state.line.addPoint(this.getPixelCoords());
-			state.line.drawLine();
+			// state.line.addPoint(this.getPixelCoords());
+			// state.line.drawLine();
 			this.needsUpdate = true;
 		};
 		let innerHex: HTMLElement = <HTMLDivElement>(
@@ -145,7 +147,7 @@ export default class Tile {
 	}
 
 	// returns a list of all the neighbors
-	getNeighbors() {
+	getNeighbors(onlyTraversable: boolean) {
 		let result: Tile[] = [];
 		let allDepl: TileShift[] = [
 			{ qShift: 1, rShift: 0, sShift: -1 },
@@ -159,7 +161,7 @@ export default class Tile {
 			let h = this.getHexIdFromDepl(d);
 			if (h) {
 				let tile = state.tileIdMap.get(h);
-				if (tile) result.push(tile);
+				if (tile && (!onlyTraversable || (onlyTraversable && tile.isTraversable))) result.push(tile);
 			}
 		});
 		return result;
@@ -167,7 +169,7 @@ export default class Tile {
 
 	// Apply the function f that takes a Tile as parameter to all the neighbors of a tile
 	applyToNeighbors(f: (t: Tile) => any) {
-		var allN = this.getNeighbors();
+		var allN = this.getNeighbors(true);
 		allN.forEach((n) => {
 			f(n);
 		});
@@ -190,7 +192,7 @@ export default class Tile {
 				let d: HTMLElement = <HTMLDivElement>(
 					document.createElement('div')
 				);
-				d.style = `position: absolute; left: ${result.x}px; top: ${result.y}px; width: 5px; height: 5px; background-color: lightgreen;`;
+				d.style = `position: absolute; left: ${result.x}px; top: ${result.y}px; width: 1px; height: 1px; background-color: lightgreen;z-index:50`;
 				root.appendChild(d);
 			}
 		}

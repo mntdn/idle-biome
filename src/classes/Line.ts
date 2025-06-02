@@ -34,7 +34,7 @@ export default class Line {
                     width: ${w}px; height: ${stroke}px; 
                     background-color: red;
                     // background: linear-gradient(90deg,rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 1) 100%);
-                    transform: rotate(${angle}rad);
+                    transform: rotate(${angle}rad) translate(-${stroke / 2}px, -${stroke / 2}px);
                     transform-origin: 0% 0%;`;
 				root.appendChild(d);
 
@@ -44,7 +44,7 @@ export default class Line {
                 t.classList = "triangle";
                 t.style = `position: absolute; 
                     left: ${this.coords[1].x - 10}px; 
-                    top: ${this.coords[1].y - 10}px; 
+                    top: ${this.coords[1].y - 7.5}px; 
                     transform: rotate(${angle + (Math.PI * 0.5)}rad);
                     // transform-origin: 0% 0%;`
 				root.appendChild(t);

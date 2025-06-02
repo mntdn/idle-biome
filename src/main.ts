@@ -36,7 +36,7 @@ const findPath = (start: TilePos, end: TilePos) => {
 
 		let curPos = utils.getTileByPos(current!.position)
 		if (curPos) {
-			let neighbors = curPos.getNeighbors();
+			let neighbors = curPos.getNeighbors(true);
 			neighbors.forEach((next) => {
 				let newCost = costSoFar.get(curPos.position)! + curPos.cost;
 				if (!costSoFar.has(next.position) || newCost < costSoFar.get(next.position)!) {
@@ -149,8 +149,7 @@ if (dMenu) {
 	b3.textContent = 'Wall';
 	b3.onclick = () => {
 		if(state.currentTile){
-			state.currentTile.tileType = ETileType.stone;
-			state.currentTile.cost = 10;
+			state.currentTile.isTraversable = false;
 			state.currentTile.needsUpdate;
 		}
 	}
