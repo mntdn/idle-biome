@@ -32,11 +32,22 @@ export default class Line {
                     left: ${this.coords[0].x}px; 
                     top: ${this.coords[0].y}px; 
                     width: ${w}px; height: ${stroke}px; 
-                    background-color: purple;
-                    background: linear-gradient(90deg,rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 1) 100%);
+                    background-color: red;
+                    // background: linear-gradient(90deg,rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 1) 100%);
                     transform: rotate(${angle}rad);
                     transform-origin: 0% 0%;`;
 				root.appendChild(d);
+
+                let t: HTMLElement = <HTMLDivElement>(
+					document.createElement('div')
+				);
+                t.classList = "triangle";
+                t.style = `position: absolute; 
+                    left: ${this.coords[1].x - 10}px; 
+                    top: ${this.coords[1].y - 10}px; 
+                    transform: rotate(${angle + (Math.PI * 0.5)}rad);
+                    // transform-origin: 0% 0%;`
+				root.appendChild(t);
 			}
             this.coords = [];
         }

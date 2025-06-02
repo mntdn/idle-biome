@@ -113,8 +113,8 @@ export default class Tile {
 			// this.borderSize *= 2;
 			hex.style = this.getStyle();
 			state.player.moveTo(this.position);
-			// state.line.addPoint(this.getPixelCoords());
-			// state.line.drawLine();
+			state.line.addPoint(this.getPixelCoords());
+			state.line.drawLine();
 			this.needsUpdate = true;
 		};
 		let innerHex: HTMLElement = <HTMLDivElement>(

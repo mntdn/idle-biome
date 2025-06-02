@@ -71,8 +71,8 @@ const findPath = (start: TilePos, end: TilePos) => {
 			let tFrom = utils.getTileByPos(from!);
 			let tTo = utils.getTileByPos(to);
 			if(tFrom && tTo){
-				l.addPoint(tFrom.getPixelCoords());
 				l.addPoint(tTo.getPixelCoords());
+				l.addPoint(tFrom.getPixelCoords());
 				l.drawLine();
 			}
 		}
