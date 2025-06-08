@@ -38,7 +38,18 @@ const getTileByPos = (pos: TilePos): Tile|null => {
     return result;
 }
 
+const createButton = (label: string, style: string, click: () => void): HTMLButtonElement => {
+    let but: HTMLButtonElement = document.createElement('button');
+	but.textContent = label;
+    but.style = style;
+	but.onclick = () => {
+        click();
+	}
+    return but;
+}
+
 const _ = {
+    createButton,
     getRandomInt,
     guid,
     getBySelector,

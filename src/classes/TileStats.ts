@@ -1,14 +1,14 @@
-enum EStatType {
-    water,
-    mineral
-}
+// enum EStatType {
+//     water,
+//     mineral
+// }
 
-interface StatProperties {
-    pType: EStatType,
-    quantity: number,
-    qtyAddedPerTick: number,
-    qtyAbsorbedPerTick: number
-}
+// interface StatProperties {
+//     pType: EStatType,
+//     quantity: number,
+//     qtyAddedPerTick: number,
+//     qtyAbsorbedPerTick: number
+// }
 
 export default class TileStats {
 
