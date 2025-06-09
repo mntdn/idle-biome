@@ -1,7 +1,3 @@
-import Tile from "../classes/Tile";
-import TilePos from "../classes/TilePos";
-import state from "../state";
-
 // The maximum is exclusive and the minimum is inclusive
 const getRandomInt = (min: number, max: number): number => {
     const minCeiled = Math.ceil(min);
@@ -28,15 +24,6 @@ const getBySelector = (selector: string): HTMLElement => {
     return document.createElement('div');
 }
 
-const getTileByPos = (pos: TilePos): Tile|null => {
-    let result: Tile|null = null;
-    const posStr = `${pos.q}${pos.r}${pos.s}`;
-    const id = state.tilePosMap.get(posStr);
-    if(id !== undefined && state.tileIdMap.has(id)){
-        result = state.tileIdMap.get(id)!;
-    }
-    return result;
-}
 
 const createButton = (label: string, style: string, click: () => void): HTMLButtonElement => {
     let but: HTMLButtonElement = document.createElement('button');
@@ -53,7 +40,6 @@ const _ = {
     getRandomInt,
     guid,
     getBySelector,
-    getTileByPos,
     round
 }
 

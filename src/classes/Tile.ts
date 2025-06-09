@@ -2,7 +2,6 @@ import { ETileType } from '../enums/ETileType';
 import utils from '../shared/utils';
 import TileStats from './TileStats';
 import state from '../state';
-import TileShift from '../interfaces/TileShift';
 import TilePos from './TilePos';
 import { Point } from '../interfaces/Point';
 
@@ -55,14 +54,14 @@ export default class Tile {
         this.pfResult = 0;
         this.positionX = 0;
         this.positionY = 0;
-        if (!this.isHidden) {
-            // we only store the position of the hex if it is shown
-            state.tilePosMap.set(
-                `${this.position.q}${this.position.r}${this.position.s}`,
-                this.id,
-            );
-            state.tileIdMap.set(this.id, this);
-        }
+        // if (!this.isHidden) {
+        //     // we only store the position of the hex if it is shown
+        //     state.tilePosMap.set(
+        //         `${this.position.q}${this.position.r}${this.position.s}`,
+        //         this.id,
+        //     );
+        //     state.tileIdMap.set(this.id, this);
+        // }
     }
 
     getColorByType(isHover: boolean) {
@@ -153,43 +152,6 @@ export default class Tile {
         this.needsUpdate = false;
     }
 
-    private getHexIdFromDepl(shift: TileShift) {
-        let tileCoord = `${this.position.q + shift.qShift}${this.position.r + shift.rShift}${this.position.s + shift.sShift}`;
-        if (state.tilePosMap.has(tileCoord)) {
-            let t = state.tilePosMap.get(tileCoord);
-            if (t) return t;
-        }
-        return null;
-    }
-
-    // returns a list of all the neighbors
-    getNeighbors(onlyTraversable: boolean) {
-        let result: Tile[] = [];
-        let allDepl: TileShift[] = [
-            { qShift: 1, rShift: 0, sShift: -1 },
-            { qShift: 1, rShift: -1, sShift: 0 },
-            { qShift: 0, rShift: -1, sShift: +1 },
-            { qShift: -1, rShift: 0, sShift: 1 },
-            { qShift: -1, rShift: +1, sShift: 0 },
-            { qShift: 0, rShift: 1, sShift: -1 },
-        ];
-        allDepl.forEach((d) => {
-            let h = this.getHexIdFromDepl(d);
-            if (h) {
-                let tile = state.tileIdMap.get(h);
-                if (tile && (!onlyTraversable || (onlyTraversable && tile.isTraversable))) result.push(tile);
-            }
-        });
-        return result;
-    }
-
-    // Apply the function f that takes a Tile as parameter to all the neighbors of a tile
-    applyToNeighbors(f: (t: Tile) => any) {
-        var allN = this.getNeighbors(true);
-        allN.forEach((n) => {
-            f(n);
-        });
-    }
 
     // returns the x,y coords of the middle
     getPixelCoords(): Point {
@@ -239,7 +201,7 @@ export default class Tile {
             menu.remove();
         }))
         menu.appendChild(utils.createButton('Player go to', buttonStyle, () => {
-            state.player.findPath(this.position);
+            state.currentLevel!.findPath(this.position);
             menu.remove();
         }))
         menu.appendChild(utils.createButton('X', buttonStyle, () => {

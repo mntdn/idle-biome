@@ -1,9 +1,7 @@
-import Tile from './classes/Tile';
-import { ETileType } from "./enums/ETileType";
 import utils from "./shared/utils";
 import './style/main.scss';
 import state from './state';
-import Level from './classes/Level';
+import Level from "./classes/Level";
 
 var dMenu = document.querySelector('#app .menu-box');
 if (dMenu) {
@@ -17,15 +15,17 @@ if (dMenu) {
 state.currentLevel = new Level();
 
 const execTick = () => {
-	state.tileIdMap.forEach(t => {
-		let toUpdate = false;
-		if (t.stats.hasTickAction) {
-			t.stats.tickExec();
-			toUpdate = true;
-		}
-		if (toUpdate || t.needsUpdate)
-			t.updateTile();
-	})
+	if(state.currentLevel){
+		state.currentLevel.tileIdMap.forEach(t => {
+			let toUpdate = false;
+			if (t.stats.hasTickAction) {
+				t.stats.tickExec();
+				toUpdate = true;
+			}
+			if (toUpdate || t.needsUpdate)
+				t.updateTile();
+		})
+	}
 }
 
 var tickTimeMs = 1000;
