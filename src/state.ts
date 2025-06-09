@@ -1,3 +1,4 @@
+import Level from "./classes/Level";
 import Line from "./classes/Line";
 import Player from "./classes/Player";
 import Tile from "./classes/Tile";
@@ -15,6 +16,7 @@ class State {
     // Map of tile id to its Tile content for quick access
     tileIdMap: Map<string, Tile> = new Map();
 
+    currentLevel: Level | null = null;
     player: Player = new Player();
 
     line: Line = new Line();
