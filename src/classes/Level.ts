@@ -4,6 +4,7 @@ import TileShift from "../interfaces/TileShift";
 import utils from "../shared/utils";
 import state from "../state";
 import Line from "./Line";
+import Player from "./Player";
 import Tile from "./Tile";
 import TilePos from "./TilePos";
 
@@ -14,8 +15,9 @@ export default class Level {
 
     // Map of tile id to its Tile content for quick access
     tileIdMap: Map<string, Tile> = new Map();
+    player: Player = new Player();
 
-    constructor(){
+    constructor() {
         let d = utils.getBySelector('#app .left-box');
         let divContainer: HTMLElement = <HTMLDivElement>document.createElement('div');
         divContainer.classList = 'tiles-container';
@@ -54,8 +56,8 @@ export default class Level {
         }
         d.appendChild(divContainer);
     }
-    
-    showTileDetails (t: Tile) {
+
+    showTileDetails(t: Tile) {
         let d = utils.getBySelector('#app .right-box');
         d.innerHTML = '';
         let div: HTMLElement = <HTMLPreElement>document.createElement('pre');
@@ -64,15 +66,15 @@ export default class Level {
         d.appendChild(div);
     }
 
-    private getTileByPos (pos: TilePos): Tile|null {
-    let result: Tile|null = null;
-    const posStr = `${pos.q}${pos.r}${pos.s}`;
-    const id = this.tilePosMap.get(posStr);
-    if(id !== undefined && this.tileIdMap.has(id)){
-        result = this.tileIdMap.get(id)!;
+    private getTileByPos(pos: TilePos): Tile | null {
+        let result: Tile | null = null;
+        const posStr = `${pos.q}${pos.r}${pos.s}`;
+        const id = this.tilePosMap.get(posStr);
+        if (id !== undefined && this.tileIdMap.has(id)) {
+            result = this.tileIdMap.get(id)!;
+        }
+        return result;
     }
-    return result;
-}
 
     private getHexIdFromDepl(tile: Tile, shift: TileShift) {
         let tileCoord = `${tile.position.q + shift.qShift}${tile.position.r + shift.rShift}${tile.position.s + shift.sShift}`;
@@ -103,76 +105,91 @@ export default class Level {
         });
         return result;
     }
-    
-	distance (a: TilePos, b: TilePos): number {
-		const vec: TilePos = new TilePos(a.q - b.q, a.r - b.r, a.s - b.s);
-		return (Math.abs(vec.q) + Math.abs(vec.r) + Math.abs(vec.s)) / 2;
-	}
 
-	findPath(end: TilePos) {
-		const start = state.player.currentPosition;
-		const frontier: PriorityQueue[] = [];
-		frontier.push({
-			position: start,
-			priority: 0
-		})
-		const cameFrom: Map<TilePos, TilePos | null> = new Map();
-		const costSoFar: Map<TilePos, number> = new Map();
-		cameFrom.set(start, null);
-		costSoFar.set(start, 0);
+    distance(a: TilePos, b: TilePos): number {
+        const vec: TilePos = new TilePos(a.q - b.q, a.r - b.r, a.s - b.s);
+        return (Math.abs(vec.q) + Math.abs(vec.r) + Math.abs(vec.s)) / 2;
+    }
 
-		while (frontier.length > 0) {
-			let current = frontier.shift();
-			if (current!.position == end)
-				break;
+    findPath(end: TilePos) {
+        const start = this.player.currentPosition;
+        const frontier: PriorityQueue[] = [];
+        frontier.push({
+            position: start,
+            priority: 0
+        })
+        const cameFrom: Map<TilePos, TilePos | null> = new Map();
+        const costSoFar: Map<TilePos, number> = new Map();
+        cameFrom.set(start, null);
+        costSoFar.set(start, 0);
 
-			let curPos = this.getTileByPos(current!.position)
-			if (curPos) {
-				let neighbors = this.getNeighbors(curPos, true);
-				neighbors.forEach((next) => {
-					let newCost = costSoFar.get(curPos.position)! + curPos.cost;
-					if (!costSoFar.has(next.position) || newCost < costSoFar.get(next.position)!) {
-						costSoFar.set(next.position, newCost);
-						let prio = newCost + this.distance(end, next.position);
-						frontier.push({
-							position: next.position,
-							priority: prio
-						});
-						cameFrom.set(next.position, curPos.position)
-					}
-				})
-			} else {
-				console.error("Problem with pathfinding at", current!.position);
-				break;
-			}
-		}
+        while (frontier.length > 0) {
+            let current = frontier.shift();
+            if (current!.position == end)
+                break;
 
-		costSoFar.forEach((v, k) => {
-			let t = this.getTileByPos(k);
-			if (t) {
-				t.pfResult = v;
-				t.needsUpdate = true;
-			}
-		})
+            let curPos = this.getTileByPos(current!.position)
+            if (curPos) {
+                let neighbors = this.getNeighbors(curPos, true);
+                neighbors.forEach((next) => {
+                    let newCost = costSoFar.get(curPos.position)! + curPos.cost;
+                    if (!costSoFar.has(next.position) || newCost < costSoFar.get(next.position)!) {
+                        costSoFar.set(next.position, newCost);
+                        let prio = newCost + this.distance(end, next.position);
+                        frontier.push({
+                            position: next.position,
+                            priority: prio
+                        });
+                        cameFrom.set(next.position, curPos.position)
+                    }
+                })
+            } else {
+                console.error("Problem with pathfinding at", current!.position);
+                break;
+            }
+        }
 
-		let lastTile = end;
-		let finished = false;
-		while (!finished) {
-			if (lastTile && cameFrom.get(lastTile)) {
-				const l = new Line();
-				let tFrom = this.getTileByPos(lastTile);
-				let tTo = this.getTileByPos(cameFrom.get(lastTile)!);
-				if (tFrom && tTo) {
-					l.addPoint(tTo.getPixelCoords());
-					l.addPoint(tFrom.getPixelCoords());
-					l.drawLine();
-				}
-				lastTile = cameFrom.get(lastTile)!;
-				if (cameFrom.get(end) === start)
-					finished = true;
-			} else {
-				finished = true;
-			}
-		}
-	}
+        costSoFar.forEach((v, k) => {
+            let t = this.getTileByPos(k);
+            if (t) {
+                t.pfResult = v;
+                t.needsUpdate = true;
+            }
+        })
+
+        let lastTile = end;
+        let finished = false;
+        while (!finished) {
+            if (lastTile && cameFrom.get(lastTile)) {
+                const l = new Line();
+                let tFrom = this.getTileByPos(lastTile);
+                let tTo = this.getTileByPos(cameFrom.get(lastTile)!);
+                if (tFrom && tTo) {
+                    l.addPoint(tTo.getPixelCoords());
+                    l.addPoint(tFrom.getPixelCoords());
+                    l.drawLine();
+                }
+                lastTile = cameFrom.get(lastTile)!;
+                if (cameFrom.get(end) === start)
+                    finished = true;
+            } else {
+                finished = true;
+            }
+        }
+    }
+
+    movePlayer(dest: TilePos) {
+        this.getTileByPos(this.player.currentPosition)!.needsUpdate = true;
+        this.player.moveTo(dest);
+        this.getTileByPos(dest)!.needsUpdate = true;
+        this.redraw();
+    }
+
+    redraw() {
+        this.tileIdMap.forEach((v) => {
+            if(v.needsUpdate){
+                v.updateTile();
+            }
+        })
+    }
 }

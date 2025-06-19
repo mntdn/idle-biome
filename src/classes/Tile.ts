@@ -89,7 +89,7 @@ export default class Tile {
     private getContent() {
         let result = '';
         if (!this.isHidden) {
-            if (this.position.isEqual(state.player.currentPosition))
+            if (this.position.isEqual(state.currentLevel?.player.currentPosition))
                 result = '@';
             result += '<br />' + utils.round(this.pfResult);
         }
@@ -114,18 +114,18 @@ export default class Tile {
         hex.onclick = (e: any) => {
             this.onClick();
             state.currentTile = this;
-            this.tileType = ETileType.dirt;
-            // showNeighbors(t);
-            this.stats.addWaterPerTick(2);
-            this.colorBorder = 'darkred';
-            // this.borderSize *= 2;
-            hex.style = this.getStyle();
-            // state.player.moveTo(this.position);
-            // state.line.addPoint(this.getPixelCoords());
-            // state.line.drawLine();
-            this.needsUpdate = true;
+            // this.tileType = ETileType.dirt;
+            // // showNeighbors(t);
+            // this.stats.addWaterPerTick(2);
+            // this.colorBorder = 'darkred';
+            // // this.borderSize *= 2;
+            // hex.style = this.getStyle();
+            // // state.player.moveTo(this.position);
+            // // state.line.addPoint(this.getPixelCoords());
+            // // state.line.drawLine();
+            // this.needsUpdate = true;
             this.clickMenu(e);
-            this.updateTile();
+            // this.updateTile();
         };
         let innerHex: HTMLElement = <HTMLDivElement>(
             document.createElement('div')
@@ -143,7 +143,7 @@ export default class Tile {
         var hex = document.getElementById(this.id);
         if (hex) {
             hex.style = this.getStyle();
-            console.log(hex.style);
+            // console.log(hex.style);
         }
         var hexHtml = document.getElementById(this.id + 'IN');
         if (hexHtml) {
@@ -193,11 +193,13 @@ export default class Tile {
         menu.style = `position: absolute; left: ${e.clientX}px; top: ${e.clientY}px; width: 200px; height: ${28 * 4}px; background-color: beige;z-index:500`;
         menu.appendChild(utils.createButton('Wall', buttonStyle, () => {
             this.isTraversable = false;
+            this.isHidden = true;
             this.needsUpdate = true;
+            state.currentLevel!.redraw();
             menu.remove();
         }))
         menu.appendChild(utils.createButton('Move player', buttonStyle, () => {
-            state.player.moveTo(this.position);
+            state.currentLevel!.movePlayer(this.position);
             menu.remove();
         }))
         menu.appendChild(utils.createButton('Player go to', buttonStyle, () => {
