@@ -1,4 +1,5 @@
 import utils from "./shared/utils";
+import path from "./shared/path";
 import './style/main.scss';
 import state from './state';
 import Level from "./classes/Level";
@@ -10,6 +11,8 @@ import TilePos from "./classes/TilePos";
 // 	e.preventDefault();
 // }, false);
 
+var curPath = "";
+
 var dMenu = document.querySelector('#app .menu-box');
 if (dMenu) {
 	let d = (dMenu as HTMLElement);
@@ -17,6 +20,8 @@ if (dMenu) {
 	d.appendChild(utils.createButton('Tick', '', () => {execTick();}));
 	d.appendChild(utils.createButton('Start', '', () => {mainProcess();}));
 	d.appendChild(utils.createButton('Pause', '', () => {window.clearTimeout(currentTimeout);}));
+	d.appendChild(utils.createButton('Draw Path', '', () => {curPath = path.drawPath(state.currentLevel!.player.currentPath)}));
+	d.appendChild(utils.createButton('Remove Path', '', () => {path.removePath(curPath)}));
 }
 
 state.currentLevel = new Level();

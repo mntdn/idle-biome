@@ -1,6 +1,7 @@
 import { ETileType } from "../enums/ETileType";
 import { PriorityQueue } from "../interfaces/PriorityQueue";
 import TileShift from "../interfaces/TileShift";
+import Vector from "../interfaces/Vector";
 import utils from "../shared/utils";
 import state from "../state";
 import Line from "./Line";
@@ -78,7 +79,7 @@ export default class Level {
         return result;
     }
 
-    private getTileByShortString(pos: string): Tile | null {
+    getTileByShortString(pos: string): Tile | null {
         let result: Tile | null = null;
         const id = this.tilePosMap.get(pos);
         if (id !== undefined && this.tileIdMap.has(id)) {
@@ -122,7 +123,7 @@ export default class Level {
         return (Math.abs(vec.q) + Math.abs(vec.r) + Math.abs(vec.s)) / 2;
     }
 
-    findPath(end: TilePos) {
+    findPath(end: TilePos): Vector[] {
         const start = this.player.currentPosition;
         const frontier: PriorityQueue[] = [];
         frontier.push({
@@ -159,25 +160,32 @@ export default class Level {
             }
         }
 
-        costSoFar.forEach((v, k) => {
-            let t = this.getTileByShortString(k);
-            if (t) {
-                t.pfResult = v;
-                t.needsUpdate = true;
-            }
-        })
+        // costSoFar.forEach((v, k) => {
+        //     let t = this.getTileByShortString(k);
+        //     if (t) {
+        //         t.pfResult = v;
+        //         t.needsUpdate = true;
+        //     }
+        // })
+
+        let result: Vector[] = [];
+
         let lastTile = end.toShortString();
         let finished = false;
         while (!finished) {
             if (lastTile && cameFrom.get(lastTile)) {
-                const l = new Line();
-                let tFrom = this.getTileByShortString(lastTile);
-                let tTo = this.getTileByShortString(cameFrom.get(lastTile)!);
-                if (tFrom && tTo) {
-                    l.addPoint(tTo.getPixelCoords());
-                    l.addPoint(tFrom.getPixelCoords());
-                    l.drawLine();
-                }
+                result.unshift({
+                    from: cameFrom.get(lastTile)!,
+                    to: lastTile
+                })
+                // const l = new Line();
+                // let tFrom = this.getTileByShortString(lastTile);
+                // let tTo = this.getTileByShortString(cameFrom.get(lastTile)!);
+                // if (tFrom && tTo) {
+                //     l.addPoint(tTo.getPixelCoords());
+                //     l.addPoint(tFrom.getPixelCoords());
+                //     l.drawLine();
+                // }
                 lastTile = cameFrom.get(lastTile)!;
                 if (cameFrom.get(end.toShortString()) === start.toShortString())
                     finished = true;
@@ -185,6 +193,7 @@ export default class Level {
                 finished = true;
             }
         }
+        return result;
     }
 
     movePlayer(dest: TilePos) {

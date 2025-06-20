@@ -91,7 +91,8 @@ export default class Tile {
         if (!this.isHidden) {
             if (this.position.isEqual(state.currentLevel?.player.currentPosition))
                 result = '@';
-            result += `<br /><span class="sm">${this.position.toString()}</span>`
+            if(state.debugMode)
+                result += `<br /><span class="sm">${this.position.toString()}</span>`
         }
         return result;
     }
@@ -154,7 +155,7 @@ export default class Tile {
 
 
     // returns the x,y coords of the middle
-    getPixelCoords(): Point {
+    getPixelCoords(drawPixel: boolean): Point {
         let result: Point = {
             x: 0,
             y: 0,
@@ -164,14 +165,15 @@ export default class Tile {
             const r = hex.getBoundingClientRect();
             result.x = r.x + (r.width / 2);
             result.y = r.y + (r.height / 2);
-            // console.log(this.id, result.x, result.y);
-            var root = document.getElementById('app');
-            if (root) {
-                let d: HTMLElement = <HTMLDivElement>(
-                    document.createElement('div')
-                );
-                d.style = `position: absolute; left: ${result.x}px; top: ${result.y}px; width: 1px; height: 1px; background-color: lightgreen;z-index:50`;
-                root.appendChild(d);
+            if(drawPixel){
+                var root = document.getElementById('app');
+                if (root) {
+                    let d: HTMLElement = <HTMLDivElement>(
+                        document.createElement('div')
+                    );
+                    d.style = `position: absolute; left: ${result.x}px; top: ${result.y}px; width: 1px; height: 1px; background-color: lightgreen;z-index:50`;
+                    root.appendChild(d);
+                }
             }
         }
         return result;
@@ -204,7 +206,7 @@ export default class Tile {
             menu.remove();
         }))
         menu.appendChild(utils.createButton('Player go to', buttonStyle, () => {
-            state.currentLevel!.findPath(this.position);
+            state.currentLevel!.player.currentPath = state.currentLevel!.findPath(this.position);
             menu.remove();
         }))
         menu.appendChild(utils.createButton('X', buttonStyle, () => {

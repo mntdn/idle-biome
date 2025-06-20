@@ -7,12 +7,11 @@ import TilePos from "./classes/TilePos";
 class State {
 	// length of one of the sides of the hexagon
     hexagonalGridSize: number;
-
     currentLevel: Level | null = null;
-
     line: Line = new Line();
     currentTile: Tile | null = null;
     pathPos: TilePos[] = [];
+    debugMode: boolean = false;
     
     constructor() {
         this.hexagonalGridSize = 5;

@@ -2,6 +2,7 @@ import { Point } from "../interfaces/Point";
 
 export default class Line {
     coords: Point[] = []
+    id: string = "";
 
     addPoint(p: Point) {
         this.coords.push(p);
@@ -24,6 +25,10 @@ export default class Line {
 				let d: HTMLElement = <HTMLDivElement>(
 					document.createElement('div')
 				);
+                if(this.id.length > 0)
+                    d.id = this.id;
+                d.classList = "line";
+
                 const stroke = 5;
                 const w = this.lineDistance(this.coords[0].x, this.coords[0].y,this.coords[1].x, this.coords[1].y);
                 const angle = Math.atan2(this.coords[1].y - this.coords[0].y, this.coords[1].x - this.coords[0].x);
@@ -41,7 +46,9 @@ export default class Line {
                 let t: HTMLElement = <HTMLDivElement>(
 					document.createElement('div')
 				);
-                t.classList = "triangle";
+                if(this.id.length > 0)
+                    t.id = this.id + "a";
+                t.classList = "line triangle";
                 t.style = `position: absolute; 
                     left: ${this.coords[1].x - 10}px; 
                     top: ${this.coords[1].y - 7.5}px; 
