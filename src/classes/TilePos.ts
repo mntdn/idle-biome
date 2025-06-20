@@ -14,4 +14,12 @@ export default class TilePos {
 			return false;
         return p.q === this.q && p.r === this.r && p.s === this.s;
     }
+
+	toString() {
+		return `(${this.q},${this.r},${this.s})`;
+	}
+
+	toShortString() {
+		return `${this.q}${this.r}${this.s}`;
+	}
 }

@@ -11,6 +11,7 @@ body {
 }
 
 #app {
+	font-family: Arial, sans-serif;
 	--hex-width: 80px;
 	--hex-border: 2px;
 	--hex-spacing: -0.1px;
@@ -126,6 +127,9 @@ body {
                         cursor: pointer;
                     }
 
+					.sm{
+						font-size: 12px;
+					}
 				}
 			}
 		}

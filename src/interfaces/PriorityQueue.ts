@@ -1,6 +1,4 @@
-import TilePos from "../classes/TilePos";
-
 export interface PriorityQueue {
-    position: TilePos;
+    position: string;
     priority: number;
 }

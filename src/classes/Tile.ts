@@ -91,7 +91,7 @@ export default class Tile {
         if (!this.isHidden) {
             if (this.position.isEqual(state.currentLevel?.player.currentPosition))
                 result = '@';
-            result += '<br />' + utils.round(this.pfResult);
+            result += `<br /><span class="sm">${this.position.toString()}</span>`
         }
         return result;
     }
@@ -164,7 +164,7 @@ export default class Tile {
             const r = hex.getBoundingClientRect();
             result.x = r.x + (r.width / 2);
             result.y = r.y + (r.height / 2);
-            console.log(result.x, result.y);
+            // console.log(this.id, result.x, result.y);
             var root = document.getElementById('app');
             if (root) {
                 let d: HTMLElement = <HTMLDivElement>(
@@ -194,6 +194,7 @@ export default class Tile {
         menu.appendChild(utils.createButton('Wall', buttonStyle, () => {
             this.isTraversable = false;
             this.isHidden = true;
+            this.tileType = ETileType.sand;
             this.needsUpdate = true;
             state.currentLevel!.redraw();
             menu.remove();

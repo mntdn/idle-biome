@@ -17,7 +17,9 @@ export default class Level {
     tileIdMap: Map<string, Tile> = new Map();
     player: Player = new Player();
 
-    constructor() {
+    constructor() {}
+
+    init() {
         let d = utils.getBySelector('#app .left-box');
         let divContainer: HTMLElement = <HTMLDivElement>document.createElement('div');
         divContainer.classList = 'tiles-container';
@@ -76,6 +78,15 @@ export default class Level {
         return result;
     }
 
+    private getTileByShortString(pos: string): Tile | null {
+        let result: Tile | null = null;
+        const id = this.tilePosMap.get(pos);
+        if (id !== undefined && this.tileIdMap.has(id)) {
+            result = this.tileIdMap.get(id)!;
+        }
+        return result;
+    }
+
     private getHexIdFromDepl(tile: Tile, shift: TileShift) {
         let tileCoord = `${tile.position.q + shift.qShift}${tile.position.r + shift.rShift}${tile.position.s + shift.sShift}`;
         if (this.tilePosMap.has(tileCoord)) {
@@ -115,32 +126,31 @@ export default class Level {
         const start = this.player.currentPosition;
         const frontier: PriorityQueue[] = [];
         frontier.push({
-            position: start,
+            position: start?.toShortString(),
             priority: 0
         })
-        const cameFrom: Map<TilePos, TilePos | null> = new Map();
-        const costSoFar: Map<TilePos, number> = new Map();
-        cameFrom.set(start, null);
-        costSoFar.set(start, 0);
-
+        const cameFrom: Map<string, string | null> = new Map();
+        const costSoFar: Map<string, number> = new Map();
+        cameFrom.set(start?.toShortString(), null);
+        costSoFar.set(start?.toShortString(), 0);
         while (frontier.length > 0) {
             let current = frontier.shift();
-            if (current!.position == end)
+            if (current!.position == end?.toShortString())
                 break;
 
-            let curPos = this.getTileByPos(current!.position)
+            let curPos = this.getTileByShortString(current!.position);
             if (curPos) {
                 let neighbors = this.getNeighbors(curPos, true);
                 neighbors.forEach((next) => {
-                    let newCost = costSoFar.get(curPos.position)! + curPos.cost;
-                    if (!costSoFar.has(next.position) || newCost < costSoFar.get(next.position)!) {
-                        costSoFar.set(next.position, newCost);
+                    let newCost = costSoFar.get(curPos.position?.toShortString())! + curPos.cost;
+                    if (!costSoFar.has(next.position?.toShortString()) || newCost < costSoFar.get(next.position?.toShortString())!) {
+                        costSoFar.set(next.position?.toShortString(), newCost);
                         let prio = newCost + this.distance(end, next.position);
                         frontier.push({
-                            position: next.position,
+                            position: next.position?.toShortString(),
                             priority: prio
                         });
-                        cameFrom.set(next.position, curPos.position)
+                        cameFrom.set(next.position?.toShortString(), curPos.position?.toShortString())
                     }
                 })
             } else {
@@ -150,27 +160,26 @@ export default class Level {
         }
 
         costSoFar.forEach((v, k) => {
-            let t = this.getTileByPos(k);
+            let t = this.getTileByShortString(k);
             if (t) {
                 t.pfResult = v;
                 t.needsUpdate = true;
             }
         })
-
-        let lastTile = end;
+        let lastTile = end.toShortString();
         let finished = false;
         while (!finished) {
             if (lastTile && cameFrom.get(lastTile)) {
                 const l = new Line();
-                let tFrom = this.getTileByPos(lastTile);
-                let tTo = this.getTileByPos(cameFrom.get(lastTile)!);
+                let tFrom = this.getTileByShortString(lastTile);
+                let tTo = this.getTileByShortString(cameFrom.get(lastTile)!);
                 if (tFrom && tTo) {
                     l.addPoint(tTo.getPixelCoords());
                     l.addPoint(tFrom.getPixelCoords());
                     l.drawLine();
                 }
                 lastTile = cameFrom.get(lastTile)!;
-                if (cameFrom.get(end) === start)
+                if (cameFrom.get(end.toShortString()) === start.toShortString())
                     finished = true;
             } else {
                 finished = true;
