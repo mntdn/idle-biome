@@ -209,6 +209,10 @@ export default class Tile {
             state.currentLevel!.player.currentPath = state.currentLevel!.findPath(this.position);
             menu.remove();
         }))
+        menu.appendChild(utils.createButton('GO !!!', buttonStyle, () => {
+            state.playGame();
+            menu.remove();
+        }))
         menu.appendChild(utils.createButton('X', buttonStyle, () => {
             menu.remove();
         }))

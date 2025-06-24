@@ -2,9 +2,9 @@ import { ETileType } from "../enums/ETileType";
 import { PriorityQueue } from "../interfaces/PriorityQueue";
 import TileShift from "../interfaces/TileShift";
 import Vector from "../interfaces/Vector";
+import path from "../shared/path";
 import utils from "../shared/utils";
 import state from "../state";
-import Line from "./Line";
 import Player from "./Player";
 import Tile from "./Tile";
 import TilePos from "./TilePos";
@@ -44,7 +44,14 @@ export default class Level {
                     this.tileIdMap.set(t.id, t);
                 }
 
-                t.onHover = () => this.showTileDetails(t)
+                t.onHover = () => {
+                    if(!state.isGamePlaying && !t.position.isEqual(this.player.currentPosition)) {
+                        this.player.currentDestination = t.position;
+                        this.player.currentPath = this.findPath(t.position);
+                        this.updatePathDrawings();
+                    }
+                    this.showTileDetails(t);
+                }
                 t.onClick = () => {
                     // pathPos.push(t.position);
                     // if(pathPos.length == 2){
@@ -178,14 +185,6 @@ export default class Level {
                     from: cameFrom.get(lastTile)!,
                     to: lastTile
                 })
-                // const l = new Line();
-                // let tFrom = this.getTileByShortString(lastTile);
-                // let tTo = this.getTileByShortString(cameFrom.get(lastTile)!);
-                // if (tFrom && tTo) {
-                //     l.addPoint(tTo.getPixelCoords());
-                //     l.addPoint(tFrom.getPixelCoords());
-                //     l.drawLine();
-                // }
                 lastTile = cameFrom.get(lastTile)!;
                 if (cameFrom.get(end.toShortString()) === start.toShortString())
                     finished = true;
@@ -201,6 +200,13 @@ export default class Level {
         this.player.moveTo(dest);
         this.getTileByPos(dest)!.needsUpdate = true;
         this.redraw();
+    }
+
+    // updates all the drawn paths of all the moving things
+    updatePathDrawings() {
+        if(this.player.currentPathId.length > 0)
+            path.removePath(this.player.currentPathId);
+        this.player.currentPathId = path.drawPath(this.player.currentPath);
     }
 
     redraw() {

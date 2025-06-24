@@ -12,10 +12,48 @@ class State {
     currentTile: Tile | null = null;
     pathPos: TilePos[] = [];
     debugMode: boolean = false;
+    tickTimeMs: number = 1000;
+    currentTimeout: number = 0;
+    isGamePlaying: boolean = false;
     
     constructor() {
         this.hexagonalGridSize = 5;
     }
+    
+    execTick() {
+        if(state.currentLevel){
+            state.currentLevel?.player.goToDestination();
+            state.currentLevel.tileIdMap.forEach(t => {
+                let toUpdate = false;
+                if (t.stats.hasTickAction) {
+                    t.stats.tickExec();
+                    toUpdate = true;
+                }
+                if (toUpdate || t.needsUpdate)
+                    t.updateTile();
+            })
+            state.currentLevel.updatePathDrawings();
+            console.log("l", state.currentLevel.player.currentPath.length)
+            if(state.currentLevel.player.currentPath.length == 0)
+                this.stopGame();
+        }
+    }
+
+    playGame() {
+        this.isGamePlaying = true;
+        this.execTick();
+        if(this.isGamePlaying)
+            this.setTimer();
+    };
+
+    stopGame() {
+        this.isGamePlaying = false;
+        window.clearInterval(this.currentTimeout);
+    }
+
+    setTimer() {
+        this.currentTimeout = window.setTimeout(() => {this.playGame()}, this.tickTimeMs);
+    };
 }
 
 const state = new State();
