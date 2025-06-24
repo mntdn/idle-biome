@@ -91,6 +91,11 @@ export default class Tile {
         if (!this.isHidden) {
             if (this.position.isEqual(state.currentLevel?.player.currentPosition))
                 result = '@';
+            state.currentLevel!.npcs.forEach((n) => {
+                if (this.position.isEqual(n.currentPosition)){
+                    result = '+';
+                }
+            });
             if(state.debugMode)
                 result += `<br /><span class="sm">${this.position.toString()}</span>`
         }

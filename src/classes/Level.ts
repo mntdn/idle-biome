@@ -5,6 +5,7 @@ import Vector from "../interfaces/Vector";
 import path from "../shared/path";
 import utils from "../shared/utils";
 import state from "../state";
+import Character from "./Character";
 import Player from "./Player";
 import Tile from "./Tile";
 import TilePos from "./TilePos";
@@ -17,6 +18,7 @@ export default class Level {
     // Map of tile id to its Tile content for quick access
     tileIdMap: Map<string, Tile> = new Map();
     player: Player = new Player();
+    npcs: Character[] = [];
 
     constructor() {}
 
@@ -65,6 +67,13 @@ export default class Level {
             if (divContainer) divContainer.appendChild(c);
         }
         d.appendChild(divContainer);
+
+        for(var i = 0; i < 3; i++){
+            let randPos = Array.from(this.tileIdMap)[Math.floor(Math.random() * this.tileIdMap.size)];
+            this.npcs.push(new Character(randPos[1].position));
+            randPos[1].needsUpdate = true;
+        }
+        this.redraw();
     }
 
     showTileDetails(t: Tile) {
