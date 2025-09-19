@@ -4,6 +4,7 @@ import TileStats from './TileStats';
 import state from '../state';
 import TilePos from './TilePos';
 import { Point } from '../interfaces/Point';
+import Popup from './Popup';
 
 export default class Tile {
     tileType: ETileType;
@@ -19,6 +20,7 @@ export default class Tile {
     id: string;
     stats: TileStats;
     cost: number; // cost of traversing for path finding
+    otherPopup: Popup | null;
     needsUpdate: boolean;
 
     // absolute X,Y position of the top left corner of the div containing the hex
@@ -54,6 +56,7 @@ export default class Tile {
         this.pfResult = 0;
         this.positionX = 0;
         this.positionY = 0;
+        this.otherPopup = null;
         // if (!this.isHidden) {
         //     // we only store the position of the hex if it is shown
         //     state.tilePosMap.set(
@@ -86,18 +89,24 @@ export default class Tile {
         return result;
     }
 
-    private getContent() {
+    // returns the player HTML portion of the tile
+    private getPlayerContent() {
+        let result = '';
+        if (!this.isHidden && this.position.isEqual(state.currentLevel?.player.currentPosition))
+            result = '@';
+        if(state.debugMode)
+            result += `<br /><span class="sm">${this.position.toString()}</span>`
+        return result;
+    }
+
+    private getOtherContent() {
         let result = '';
         if (!this.isHidden) {
-            if (this.position.isEqual(state.currentLevel?.player.currentPosition))
-                result = '@';
             state.currentLevel!.npcs.forEach((n) => {
                 if (this.position.isEqual(n.currentPosition)){
                     result = '+';
                 }
             });
-            if(state.debugMode)
-                result += `<br /><span class="sm">${this.position.toString()}</span>`
         }
         return result;
     }
@@ -112,6 +121,7 @@ export default class Tile {
         hex.classList = `hexagon ${this.position.q % 2 !== 0 ? 'low' : ''} ${this.isHidden ? 'hidden' : ''}`;
         hex.style = this.getStyle();
         hex.onmouseover = () => {
+            // console.log("over all hex", hex.id);
             this.onHover();
             // this.applyToNeighbors((t: Tile) => {
             // 	t.stats.addWaterPerTick(0.1);
@@ -133,12 +143,46 @@ export default class Tile {
             this.clickMenu(e);
             // this.updateTile();
         };
-        let innerHex: HTMLElement = <HTMLDivElement>(
-            document.createElement('div')
-        );
+        let innerHex: HTMLElement = <HTMLDivElement>(document.createElement('div'));
         innerHex.id = this.id + 'IN';
         innerHex.classList = 'hexagon-inner';
-        innerHex.innerHTML = this.getContent();
+        let otherDiv = <HTMLDivElement>(document.createElement('div'));
+        otherDiv.classList = 'other'
+        otherDiv.innerHTML = this.getOtherContent();
+        state.currentLevel?.mouseMoveEventHandler.addEvent({
+            tileId: this.id,
+            elementClass: 'other',
+            eventType: 'popupShow',
+            props: {
+                pos:{x: 0, y: 0},
+                width: 200,
+                height: 200,
+                htmlContent: () => {return "TEST MMO";}
+            },
+            action: () => {}
+        })
+        // otherDiv.onmouseenter = (e:MouseEvent) => {
+        //     console.log( document.elementFromPoint(e.clientX, e.clientY) )
+        //     console.log("OTHER enter", utils.getRandomInt(1,1000), hex.id);
+        //     if(this.otherPopup == null){
+        //         this.otherPopup = new Popup({x: e.clientX, y: e.clientY}, 200, 200);
+        //         this.otherPopup.update("TEST");
+        //     }
+        //     this.otherPopup.show();
+        // };
+        // otherDiv.onmouseleave = (e:MouseEvent) => {
+        //     console.log("OTHER leave", utils.getRandomInt(1,1000), hex.id);
+        //     if(this.otherPopup == null){
+        //         this.otherPopup = new Popup({x: e.clientX, y: e.clientY}, 200, 200);
+        //         this.otherPopup.update("TEST");
+        //     }
+        //     this.otherPopup.hide();
+        // };
+        let playerDiv = <HTMLDivElement>(document.createElement('div'));
+        playerDiv.classList = 'player'
+        playerDiv.innerHTML = this.getPlayerContent();
+        innerHex.appendChild(otherDiv);
+        innerHex.appendChild(playerDiv);
         hex.appendChild(innerHex);
         return hex;
     }
@@ -153,7 +197,12 @@ export default class Tile {
         }
         var hexHtml = document.getElementById(this.id + 'IN');
         if (hexHtml) {
-            hexHtml.innerHTML = this.getContent();
+            let otherDiv = hexHtml.getElementsByClassName('other');
+            if(otherDiv.length > 0)
+                otherDiv[0].innerHTML = this.getOtherContent();
+            let playerDiv = hexHtml.getElementsByClassName('player');
+            if(playerDiv.length > 0)
+                playerDiv[0].innerHTML = this.getPlayerContent();
         }
         this.needsUpdate = false;
     }

@@ -27,3 +27,4 @@ if (dMenu) {
 state.currentLevel = new Level();
 state.currentLevel.init();
 state.currentLevel!.movePlayer(new TilePos(0,0,0));
+document.onmousemove = state.currentLevel.mouseMoveHandler;

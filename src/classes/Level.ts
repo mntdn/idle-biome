@@ -6,6 +6,7 @@ import path from "../shared/path";
 import utils from "../shared/utils";
 import state from "../state";
 import Character from "./Character";
+import MouseMoveEventHandler from "./MouseMoveEventHandler";
 import Player from "./Player";
 import Tile from "./Tile";
 import TilePos from "./TilePos";
@@ -19,6 +20,8 @@ export default class Level {
     tileIdMap: Map<string, Tile> = new Map();
     player: Player = new Player();
     npcs: Character[] = [];
+    mouseMoveHandler: (e: MouseEvent) => void = () => {};
+    mouseMoveEventHandler: MouseMoveEventHandler = new MouseMoveEventHandler();
 
     constructor() {}
 
@@ -74,6 +77,7 @@ export default class Level {
             randPos[1].needsUpdate = true;
         }
         this.redraw();
+        this.mouseMoveHandler = this.mouseHandler;
     }
 
     showTileDetails(t: Tile) {
@@ -224,5 +228,23 @@ export default class Level {
                 v.updateTile();
             }
         })
+    }
+
+    mouseHandler = (e:MouseEvent) => {
+        // console.log("M", e.clientX, e.clientY);
+        // let elems = document.elementsFromPoint(e.clientX, e.clientY);
+        // let curId = '';
+        // let isOther = false;
+        // let isPlayer = false;
+        // elems.forEach((el) => {
+        //     if(el.classList.contains('hexagon'))
+        //         curId = el.id;
+        //     if(el.classList.contains('other'))
+        //         isOther = true;
+        //     if(el.classList.contains('player'))
+        //         isPlayer = true;
+        // });
+        // console.log(curId, isOther, isPlayer);
+        this.mouseMoveEventHandler.processEventsAtPoint({x: e.clientX, y: e.clientY})
     }
 }
