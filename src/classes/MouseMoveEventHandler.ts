@@ -23,7 +23,6 @@ export default class MouseMoveEventHandler {
                 curId = el.id;
             el.classList.forEach(c => classes.push(c));
         });
-        // console.log(curId, classes);
 
         let popupsShown: string[] = [];
         this.events.forEach((e) => {
@@ -31,7 +30,6 @@ export default class MouseMoveEventHandler {
                 let popupId = e.tileId + e.elementClass;
                 popupsShown.push(popupId);
                 let curPopup = this.popups.filter(p => p.id === popupId);
-                // console.log("YESSS", curPopup.length);
                 if(curPopup.length > 0){
                     e.action();
                     curPopup[0].show()
@@ -46,9 +44,9 @@ export default class MouseMoveEventHandler {
                 }
             }
         });
+
         this.popups.forEach(p => {
             if(popupsShown.indexOf(p.id) < 0){
-                console.log("cache")
                 p.hide();
             }
         })

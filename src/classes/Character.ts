@@ -2,6 +2,10 @@ import Vector from "../interfaces/Vector";
 import state from "../state";
 import TilePos from "./TilePos";
 
+/**
+ * This class defines a basic Character type.
+ * It can be the current player or an NPC (cf. those classes for more details)
+ */
 export default class Character {
     maxHP: number;
 	currentHP: number;

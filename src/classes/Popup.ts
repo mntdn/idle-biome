@@ -17,9 +17,23 @@ export default class Popup {
 	show() {
         if(this.props !== undefined){
             if (this._popup === undefined) {
+                var refElement = document.querySelector(this.props.cssRequest);
+                let x = 0; 
+                let y = 0;
+                if(refElement){
+                    let pos = refElement.getBoundingClientRect();
+                    x = pos.left + (pos.width / 2);
+                    if(this.props.position == 'centerTop' || this.props.position == 'centerBottom')
+                        x -= this.props.width / 2;
+                    y = pos.top + pos.height;
+                    if(this.props.position == 'centerBottom')
+                        y -= pos.height + this.props.height;
+                }
+                if(y < 0) y = 0;
+                if(x < 0) x = 0;
                 this._popup = <HTMLDivElement>document.createElement('div');
                 var root = utils.getBySelector('#app');
-                this._popup.style = `position: absolute; left: ${this.props.pos?.x ?? 0}px; top: ${this.props.pos?.y ?? 0}px; width: ${this.props.width}px; 
+                this._popup.style = `position: absolute; left: ${x}px; top: ${y}px; width: ${this.props.width}px; 
                 height: ${this.props.height}px; background-color: beige;z-index:500; display: none`;
                 root.appendChild(this._popup);
             }

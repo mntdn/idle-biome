@@ -5,7 +5,7 @@ import utils from "./utils";
 
 // returns the ID of the path to use with removePath
 const drawPath = (vectors: Vector[]): string => {
-    var pId = utils.guid();
+    var pId = '_' + utils.guid();
     var i = 0;
     vectors.forEach((v) => {
         const l = new Line();

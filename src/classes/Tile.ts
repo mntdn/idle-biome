@@ -38,7 +38,7 @@ export default class Tile {
         this.col = col;
         let r = line - (col - (col & 1)) / 2;
         this.position = new TilePos(col, r, -1 * col - r);
-        this.id = utils.guid();
+        this.id = '_' + utils.guid();
         this.color = this.getColorByType(false);
         this.colorHover = this.getColorByType(true);
         this.colorBorder = 'grey';
@@ -154,7 +154,9 @@ export default class Tile {
             elementClass: 'other',
             eventType: 'popupShow',
             props: {
-                pos:{x: 0, y: 0},
+                referenceCoords:{x: 0, y: 0},
+                position: 'centerBottom',
+                cssRequest: `#${this.id}IN .other`,
                 width: 200,
                 height: 200,
                 htmlContent: () => {return "TEST MMO";}
