@@ -37,7 +37,6 @@ class State {
                     t.updateTile();
             })
             state.currentLevel.updatePathDrawings();
-            console.log("l", state.currentLevel.player.currentPath.length)
             state.currentLevel.npcs.forEach((n) => {
                 if(state.currentLevel!.player.currentPosition.isEqual(n.currentPosition)){
                     console.log(`fight!!! ${state.currentLevel!.player.name} VS ${n.name}`);

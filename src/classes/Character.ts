@@ -8,9 +8,6 @@ import TilePos from "./TilePos";
  * It can be the current player or an NPC (cf. those classes for more details)
  */
 export default class Character {
-    maxHP: number;
-	name: string = "";
-	currentHP: number;
 	currentPosition: TilePos;
 	currentDestination: TilePos;
 	currentPath: Vector[] = [];
@@ -19,6 +16,19 @@ export default class Character {
 	 * All the items carried by the character
 	 */
 	inventory: Item[] = [];
+    maxHP: number;
+	name: string = "";
+	currentHP: number;
+	/**
+	 * Number of tiles per tick
+	 * TODO: implement
+	 */
+	movingSpeed: number = 1;
+	/**
+	 * The speed at which the character will attack.
+	 * The highest attack speed will attack first
+	 */
+	attackSpeed: number = 1;
 
 	constructor();
     constructor(pos: TilePos);

@@ -1,3 +1,5 @@
+import Character from "../classes/Character";
+
 /**
  * The maximum is exclusive and the minimum is inclusive
  * @param min Minimum value (inclusive)
@@ -29,6 +31,19 @@ const getBySelector = (selector: string): HTMLElement => {
     return document.createElement('div');
 }
 
+/**
+ * Returns the total value for a certain prop for an inventory
+ * @param c the Character whose inventory we want to scan
+ * @param prop the property in question
+ * @returns the total value of this property for all the items
+ */
+const sumProp = (c: Character, prop: 'attack' | 'defense' | 'attackSpeed'): number => {
+    let base = 0;
+    if(prop === 'attackSpeed')
+        base = c.attackSpeed;
+    let result = c.inventory.map(i => (i as any)[prop]).reduce((a, c) => a + c, 0);
+    return base + (isNaN(result) ? 0 : result);
+}
 
 const createButton = (label: string, style: string, click: () => void): HTMLButtonElement => {
     let but: HTMLButtonElement = document.createElement('button');
@@ -45,7 +60,8 @@ const _ = {
     getRandomInt,
     guid,
     getBySelector,
-    round
+    round,
+    sumProp
 }
 
 export default _;
