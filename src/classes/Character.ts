@@ -1,5 +1,6 @@
 import Vector from "../interfaces/Vector";
 import state from "../state";
+import Item from "./Item";
 import TilePos from "./TilePos";
 
 /**
@@ -8,11 +9,16 @@ import TilePos from "./TilePos";
  */
 export default class Character {
     maxHP: number;
+	name: string = "";
 	currentHP: number;
 	currentPosition: TilePos;
 	currentDestination: TilePos;
 	currentPath: Vector[] = [];
 	currentPathId: string = "";
+	/**
+	 * All the items carried by the character
+	 */
+	inventory: Item[] = [];
 
 	constructor();
     constructor(pos: TilePos);
@@ -27,7 +33,9 @@ export default class Character {
         this.currentPosition = t;
     }
 
-	// goes to the next tile in the currentPath
+	/**
+	 * goes to the next tile in the currentPath
+	 */
 	goToDestination() {
 		if(this.currentPath.length > 0) {
 			var p = this.currentPath.shift();

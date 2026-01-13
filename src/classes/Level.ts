@@ -7,16 +7,21 @@ import utils from "../shared/utils";
 import state from "../state";
 import Character from "./Character";
 import MouseMoveEventHandler from "./MouseMoveEventHandler";
+import NPC from "./NPC";
 import Player from "./Player";
 import Tile from "./Tile";
 import TilePos from "./TilePos";
 
 export default class Level {
-    // Map of tile q r s coords (as ${q}${r}${s}) and its id
-    // used to quickly update a tile props depending on its coordinates
+    /**
+     * Map of tile q r s coords (as ${q}${r}${s}) and its id
+     * used to quickly update a tile props depending on its coordinates
+     */
     tilePosMap: Map<string, string> = new Map();
 
-    // Map of tile id to its Tile content for quick access
+    /** 
+     * Map of tile id to its Tile content for quick access
+     */ 
     tileIdMap: Map<string, Tile> = new Map();
     player: Player = new Player();
     npcs: Character[] = [];
@@ -73,7 +78,7 @@ export default class Level {
 
         for(var i = 0; i < 3; i++){
             let randPos = Array.from(this.tileIdMap)[Math.floor(Math.random() * this.tileIdMap.size)];
-            this.npcs.push(new Character(randPos[1].position));
+            this.npcs.push(new NPC(randPos[1].position));
             randPos[1].needsUpdate = true;
         }
         this.redraw();
@@ -117,7 +122,12 @@ export default class Level {
         return null;
     }
 
-    // returns a list of all the neighbors
+    /**
+     * 
+     * @param tile Starting tile
+     * @param onlyTraversable Returns only the traversable tiles
+     * @returns A list of all the neighbors
+     */
     getNeighbors(tile: Tile, onlyTraversable: boolean) {
         let result: Tile[] = [];
         let allDepl: TileShift[] = [
@@ -215,7 +225,9 @@ export default class Level {
         this.redraw();
     }
 
-    // updates all the drawn paths of all the moving things
+    /**
+     * updates all the drawn paths of all the moving things
+     */
     updatePathDrawings() {
         if(this.player.currentPathId.length > 0)
             path.removePath(this.player.currentPathId);

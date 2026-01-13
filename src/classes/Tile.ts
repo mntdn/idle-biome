@@ -19,12 +19,20 @@ export default class Tile {
     isTraversable: boolean;
     id: string;
     stats: TileStats;
-    cost: number; // cost of traversing for path finding
+    /**
+     * cost of traversing for path finding
+     */
+    cost: number;
     otherPopup: Popup | null;
     needsUpdate: boolean;
 
-    // absolute X,Y position of the top left corner of the div containing the hex
+    /**
+     * absolute X position of the top left corner of the div containing the hex
+     */
     positionX: number;
+    /**
+     * absolute Y position of the top left corner of the div containing the hex
+     */
     positionY: number;
 
     pfResult: number;
@@ -89,7 +97,10 @@ export default class Tile {
         return result;
     }
 
-    // returns the player HTML portion of the tile
+    /**
+     * 
+     * @returns The player HTML portion of the tile
+     */
     private getPlayerContent() {
         let result = '';
         if (!this.isHidden && this.position.isEqual(state.currentLevel?.player.currentPosition))
@@ -210,7 +221,11 @@ export default class Tile {
     }
 
 
-    // returns the x,y coords of the middle
+    /**
+     * 
+     * @param drawPixel If true draws a pixel
+     * @returns The x,y coords of the middle
+     */
     getPixelCoords(drawPixel: boolean): Point {
         let result: Point = {
             x: 0,

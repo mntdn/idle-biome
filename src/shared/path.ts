@@ -3,7 +3,11 @@ import Vector from "../interfaces/Vector";
 import state from "../state";
 import utils from "./utils";
 
-// returns the ID of the path to use with removePath
+/**
+ * 
+ * @param vectors 
+ * @returns The ID of the path to use with removePath
+ */
 const drawPath = (vectors: Vector[]): string => {
     var pId = '_' + utils.guid();
     var i = 0;
@@ -21,7 +25,10 @@ const drawPath = (vectors: Vector[]): string => {
     return pId;
 }
 
-// removes a path of id pId
+/**
+ * removes a path of id pId
+ * @param pId Id of the path to be removed
+ */
 const removePath = (pId: string) => {
     var lines = document.querySelectorAll(`.line[id^="${pId}"]`);
     lines.forEach((l) => {

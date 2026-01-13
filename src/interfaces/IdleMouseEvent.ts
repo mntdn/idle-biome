@@ -1,9 +1,19 @@
 import { PopupProperties } from "./PopupProperties";
 
 export interface IdleMouseEvent {
-    tileId: string; // the id of the tile concerned
-    elementClass: string; // a class of the element that is contained in the tile
+    /**
+     * The id of the tile concerned
+     */
+    tileId: string;
+    /**
+     * A class of the element that is contained in the tile
+     */
+    elementClass: string;
     eventType: 'popupShow';
     props: PopupProperties;
-    action: () => void; // depending on the eventType will be called to do somethind
+    /**
+     * Depending on the eventType will be called to do somethind
+     * @returns Nothing
+     */
+    action: () => void; 
 }

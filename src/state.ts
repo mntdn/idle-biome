@@ -3,9 +3,13 @@ import Line from "./classes/Line";
 import Tile from "./classes/Tile";
 import TilePos from "./classes/TilePos";
 
-// The game state
+/**
+ * The game state
+ */
 class State {
-	// length of one of the sides of the hexagon
+	/**
+     * Length of one of the sides of the hexagon
+     */
     hexagonalGridSize: number;
     currentLevel: Level | null = null;
     line: Line = new Line();
@@ -34,6 +38,11 @@ class State {
             })
             state.currentLevel.updatePathDrawings();
             console.log("l", state.currentLevel.player.currentPath.length)
+            state.currentLevel.npcs.forEach((n) => {
+                if(state.currentLevel!.player.currentPosition.isEqual(n.currentPosition)){
+                    console.log(`fight!!! ${state.currentLevel!.player.name} VS ${n.name}`);
+                }
+            })
             if(state.currentLevel.player.currentPath.length == 0)
                 this.stopGame();
         }
