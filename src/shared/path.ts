@@ -8,18 +8,19 @@ import utils from "./utils";
  * @param vectors 
  * @returns The ID of the path to use with removePath
  */
-const drawPath = (vectors: Vector[]): string => {
+const drawPath = (vectors: Vector[], color: string): string => {
     var pId = '_' + utils.guid();
     var i = 0;
     vectors.forEach((v) => {
         const l = new Line();
-        l.id = pId + i;
+        l.id = pId + i++;
         let tFrom = state.currentLevel!.getTileByShortString(v.from);
         let tTo = state.currentLevel!.getTileByShortString(v.to);
         if (tFrom && tTo) {
             l.addPoint(tFrom.getPixelCoords(false));
             l.addPoint(tTo.getPixelCoords(false));
-            l.drawLine();
+            l.color = color;
+            l.drawLine(i == vectors.length);
         }
     })
     return pId;
@@ -36,9 +37,25 @@ const removePath = (pId: string) => {
     })
 }
 
+/**
+ * Indicates if the paths are the same
+ * @param p1 Path 1
+ * @param p2 Path 2
+ */
+const samePath = (p1: Vector[], p2: Vector[]): boolean => {
+    if(p1.length != p2.length)
+        return false;
+    for(let i = 0; i < p1.length; i++){
+        if(p1[i].from !== p2[i].from ||p1[i].to !== p2[i].to)
+            return false;
+    }
+    return true;
+}
+
 const _ = {
     drawPath,
-    removePath
+    removePath,
+    samePath
 }
 
 export default _;

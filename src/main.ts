@@ -20,11 +20,12 @@ if (dMenu) {
 	d.appendChild(utils.createButton('Tick', '', () => {state.execTick();}));
 	d.appendChild(utils.createButton('Start', '', () => {state.playGame();}));
 	d.appendChild(utils.createButton('Pause', '', () => {state.stopGame()}));
-	d.appendChild(utils.createButton('Draw Path', '', () => {curPath = path.drawPath(state.currentLevel!.player.currentPath)}));
+	d.appendChild(utils.createButton('Draw Path', '', () => {curPath = path.drawPath(state.currentLevel!.player.currentPath, 'red')}));
 	d.appendChild(utils.createButton('Remove Path', '', () => {path.removePath(curPath)}));
 }
 
 state.currentLevel = new Level();
 state.currentLevel.init();
 state.currentLevel!.movePlayer(new TilePos(0,0,0));
+state.currentLevel.showPlayerStats();
 document.onmousemove = state.currentLevel.mouseMoveHandler;

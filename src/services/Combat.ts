@@ -1,5 +1,4 @@
 import Character from "../classes/Character";
-import utils from "../shared/utils"
 
 /**
  * calculates a fight between 2 characters and updates their stats if needs be
@@ -11,17 +10,17 @@ import utils from "../shared/utils"
  *          2 if c2 wins 
  */
 const fight = (c1: Character, c2: Character): number => {
-    let c1Attack = utils.sumProp(c1, 'attack');
-    let c2Attack = utils.sumProp(c2, 'attack');
-    let c1Defense = utils.sumProp(c1, 'defense');
-    let c2Defense = utils.sumProp(c2, 'defense');
+    let c1Attack = c1.getTotal('attack');
+    let c2Attack = c2.getTotal('attack');
+    let c1Defense = c1.getTotal('defense');
+    let c2Defense = c2.getTotal('defense');
     // if they have the same attack and defense, nothing will happen, it's a draw
     if((c1Attack > 0 && c1Attack === c2Defense) || (c2Attack > 0 && c1Defense === c2Attack))
         return 0;
     let done: boolean = false;
 
     // to decide who attacks first, we check who has the greatest speed, if equality, the attacker starts
-    let c1First = utils.sumProp(c1, "attackSpeed") >= utils.sumProp(c2, "attackSpeed");
+    let c1First = c1.getTotal("attackSpeed") >= c2.getTotal("attackSpeed");
     while(!done){
         // the fastest attacker hits
         if(c1First)

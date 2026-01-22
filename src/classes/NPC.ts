@@ -1,5 +1,6 @@
 import Character from './Character';
 import utils from '../shared/utils';
+import Item from './Item';
 
 export default class NPC extends Character {
 	isPlayer = false;
@@ -7,11 +8,13 @@ export default class NPC extends Character {
 
 	isFriendly = false;
 	name= `NPC-${utils.guid()}`;
-	inventory = [
-		{
-			attack: 1,
-			defense: 0,
-			name: 'knife'
-		}
-	]
+	inventory = [new Item(1,0,'knife')]
+
+	htmlDescription(): string {
+		let inv = this.inventory.map(i => i.toHTML()).join('<br />');
+		return `<div>${this.name}</div>
+		<div>${this.currentHP}/${this.maxHP}</div>
+		<div>${inv}</div>
+		`;
+	}
 }

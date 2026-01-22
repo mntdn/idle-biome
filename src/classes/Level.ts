@@ -55,9 +55,9 @@ export default class Level {
                 }
 
                 t.onHover = () => {
-                    if(!state.isGamePlaying && !t.position.isEqual(this.player.currentPosition)) {
-                        this.player.currentDestination = t.position;
-                        this.player.currentPath = this.findPath(t.position);
+                    if(!t.position.isEqual(this.player.currentPosition)) {
+                        // this.player.currentDestination = t.position;
+                        this.player.tempPath = this.findPath(t.position);
                         this.updatePathDrawings();
                     }
                     this.showTileDetails(t);
@@ -85,13 +85,21 @@ export default class Level {
         this.mouseMoveHandler = this.mouseHandler;
     }
 
+    /**
+     * Shows the current player stats in the div with the player-stats class
+     */
+    showPlayerStats() {
+        let d = utils.getBySelector('#app .right-box .player-stats');
+        d.innerHTML = this.player.htmlDescription();
+    }
+
     showTileDetails(t: Tile) {
-        let d = utils.getBySelector('#app .right-box');
-        d.innerHTML = '';
-        let div: HTMLElement = <HTMLPreElement>document.createElement('pre');
-        div.style = '';
-        div.textContent = JSON.stringify(t, null, 2);
-        d.appendChild(div);
+        let d = utils.getBySelector('#app .right-box .tile-details');
+        d.innerHTML = t.getHtmlDescription();
+        // let div: HTMLElement = <HTMLPreElement>document.createElement('pre');
+        // div.style = '';
+        // div.textContent = JSON.stringify(t, null, 2);
+        // d.appendChild(div);
     }
 
     private getTileByPos(pos: TilePos): Tile | null {
@@ -231,7 +239,12 @@ export default class Level {
     updatePathDrawings() {
         if(this.player.currentPathId.length > 0)
             path.removePath(this.player.currentPathId);
-        this.player.currentPathId = path.drawPath(this.player.currentPath);
+        this.player.currentPathId = path.drawPath(this.player.currentPath, 'darkorange');
+
+        if(this.player.tempPathId.length > 0)
+            path.removePath(this.player.tempPathId);
+        if(!path.samePath(this.player.tempPath, this.player.currentPath))
+            this.player.tempPathId = path.drawPath(this.player.tempPath, 'grey');
     }
 
     redraw() {

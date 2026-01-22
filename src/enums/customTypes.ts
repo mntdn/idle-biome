@@ -1,0 +1,1 @@
+export type propertyType = 'attack' | 'defense' | 'attackSpeed';

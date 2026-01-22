@@ -160,37 +160,25 @@ export default class Tile {
         let otherDiv = <HTMLDivElement>(document.createElement('div'));
         otherDiv.classList = 'other'
         otherDiv.innerHTML = this.getOtherContent();
-        state.currentLevel?.mouseMoveEventHandler.addEvent({
-            tileId: this.id,
-            elementClass: 'other',
-            eventType: 'popupShow',
-            props: {
-                referenceCoords:{x: 0, y: 0},
-                position: 'centerBottom',
-                cssRequest: `#${this.id}IN .other`,
-                width: 200,
-                height: 200,
-                htmlContent: () => {return "TEST MMO";}
-            },
-            action: () => {}
-        })
-        // otherDiv.onmouseenter = (e:MouseEvent) => {
-        //     console.log( document.elementFromPoint(e.clientX, e.clientY) )
-        //     console.log("OTHER enter", utils.getRandomInt(1,1000), hex.id);
-        //     if(this.otherPopup == null){
-        //         this.otherPopup = new Popup({x: e.clientX, y: e.clientY}, 200, 200);
-        //         this.otherPopup.update("TEST");
-        //     }
-        //     this.otherPopup.show();
-        // };
-        // otherDiv.onmouseleave = (e:MouseEvent) => {
-        //     console.log("OTHER leave", utils.getRandomInt(1,1000), hex.id);
-        //     if(this.otherPopup == null){
-        //         this.otherPopup = new Popup({x: e.clientX, y: e.clientY}, 200, 200);
-        //         this.otherPopup.update("TEST");
-        //     }
-        //     this.otherPopup.hide();
-        // };
+
+        //
+        // Let's forget about popups for now, they're kind of annoying...
+
+        // state.currentLevel?.mouseMoveEventHandler.addEvent({
+        //     tileId: this.id,
+        //     elementClass: 'other',
+        //     eventType: 'popupShow',
+        //     props: {
+        //         referenceCoords:{x: 0, y: 0},
+        //         position: 'centerBottom',
+        //         cssRequest: `#${this.id}IN .other`,
+        //         width: 200,
+        //         height: 200,
+        //         htmlContent: () => {return this.getPopupContent();}
+        //     },
+        //     action: () => {}
+        // })
+        
         let playerDiv = <HTMLDivElement>(document.createElement('div'));
         playerDiv.classList = 'player'
         playerDiv.innerHTML = this.getPlayerContent();
@@ -220,6 +208,30 @@ export default class Tile {
         this.needsUpdate = false;
     }
 
+    /**
+     * Returns the HTML to put inside the popup with all the things happening on this tile
+     */
+    getPopupContent():string{
+        let result = '';
+
+        // adding the local NPCS
+        state.currentLevel!.npcs.forEach((n) => {
+            if (this.position.isEqual(n.currentPosition)){
+                result += n.htmlDescription();
+            }
+        });
+
+        return result;
+    }
+
+    /**
+     * Returns the current tile details and content in a nice HTML format
+     * @returns HTML to describe the tile and its contents
+     */
+    getHtmlDescription(): string {
+        return `<div>${ETileType[this.tileType]}</div>
+        `;
+    }
 
     /**
      * 
@@ -280,10 +292,10 @@ export default class Tile {
             state.currentLevel!.player.currentPath = state.currentLevel!.findPath(this.position);
             menu.remove();
         }))
-        menu.appendChild(utils.createButton('GO !!!', buttonStyle, () => {
-            state.playGame();
-            menu.remove();
-        }))
+        // menu.appendChild(utils.createButton('GO !!!', buttonStyle, () => {
+        //     state.playGame();
+        //     menu.remove();
+        // }))
         menu.appendChild(utils.createButton('X', buttonStyle, () => {
             menu.remove();
         }))

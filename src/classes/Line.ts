@@ -3,6 +3,7 @@ import { Point } from "../interfaces/Point";
 export default class Line {
     coords: Point[] = []
     id: string = "";
+    color: string = "red";
 
     addPoint(p: Point) {
         this.coords.push(p);
@@ -18,7 +19,11 @@ export default class Line {
         return Math.sqrt(xlen + ylen);
     };
 
-    drawLine() {
+    /**
+     * Draws a line defined by the 2 points in coords
+     * @param addArrow Adds an arrow at the end of the line
+     */
+    drawLine(addArrow: boolean) {
         if(this.coords.length > 1){
             var root = document.getElementById('app');
 			if (root) {
@@ -37,24 +42,26 @@ export default class Line {
                     left: ${this.coords[0].x}px; 
                     top: ${this.coords[0].y}px; 
                     width: ${w}px; height: ${stroke}px; 
-                    background-color: red;
-                    // background: linear-gradient(90deg,rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 1) 100%);
+                    background-color: ${this.color};
                     transform: rotate(${angle}rad) translate(-${stroke / 2}px, -${stroke / 2}px);
                     transform-origin: 0% 0%;`;
 				root.appendChild(d);
 
-                let t: HTMLElement = <HTMLDivElement>(
-					document.createElement('div')
-				);
-                if(this.id.length > 0)
-                    t.id = this.id + "a";
-                t.classList = "line triangle";
-                t.style = `position: absolute; 
-                    left: ${this.coords[1].x - 10}px; 
-                    top: ${this.coords[1].y - 7.5}px; 
-                    transform: rotate(${angle + (Math.PI * 0.5)}rad);
-                    // transform-origin: 0% 0%;`
-				root.appendChild(t);
+                if(addArrow){
+                    let t: HTMLElement = <HTMLDivElement>(
+                        document.createElement('div')
+                    );
+                    if(this.id.length > 0)
+                        t.id = this.id + "a";
+                    t.classList = "line triangle";
+                    t.style = `position: absolute; 
+                        left: ${this.coords[1].x - 10}px; 
+                        top: ${this.coords[1].y - 7.5}px; 
+                        border-color: transparent transparent ${this.color} transparent;
+                        transform: rotate(${angle + (Math.PI * 0.5)}rad);
+                        // transform-origin: 0% 0%;`
+                    root.appendChild(t);
+                }
 			}
             this.coords = [];
         }

@@ -1,4 +1,5 @@
 import Character from "../classes/Character";
+import { propertyType } from "../enums/customTypes";
 
 /**
  * The maximum is exclusive and the minimum is inclusive
@@ -37,7 +38,7 @@ const getBySelector = (selector: string): HTMLElement => {
  * @param prop the property in question
  * @returns the total value of this property for all the items
  */
-const sumProp = (c: Character, prop: 'attack' | 'defense' | 'attackSpeed'): number => {
+const sumProp = (c: Character, prop: propertyType): number => {
     let base = 0;
     if(prop === 'attackSpeed')
         base = c.attackSpeed;

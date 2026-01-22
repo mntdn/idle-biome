@@ -1,7 +1,9 @@
+import { propertyType } from "../enums/customTypes";
 import Vector from "../interfaces/Vector";
 import state from "../state";
 import Item from "./Item";
 import TilePos from "./TilePos";
+import utils from "../shared/utils"
 
 /**
  * This class defines a basic Character type.
@@ -52,5 +54,17 @@ export default class Character {
 			var dest = state.currentLevel!.getTileByShortString(p!.to);
 			state.currentLevel!.movePlayer(dest!.position);
 		}
+	}
+
+	/**
+	 * Returns the total value for a property
+	 * @param prop The property we want to know the total of
+	 */
+	getTotal(prop: propertyType): number {
+		return utils.sumProp(this, prop);
+	}
+
+	htmlDescription() {
+		return '';
 	}
 }

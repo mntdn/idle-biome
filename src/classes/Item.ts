@@ -13,4 +13,8 @@ export default class Item {
         this.defense = d ? d : 0;
         this.name = n ? n : '';
     }
+
+    toHTML() {
+        return `<span>${this.name} - A:${this.attack}, D:${this.defense}</span>`;
+    }
 }
