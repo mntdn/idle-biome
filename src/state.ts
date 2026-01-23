@@ -40,7 +40,7 @@ class State {
             state.currentLevel.showPlayerStats();
             state.currentLevel.npcs.forEach((n) => {
                 if(state.currentLevel!.player.currentPosition.isEqual(n.currentPosition)){
-                    console.log(`fight!!! ${state.currentLevel!.player.name} VS ${n.name}`);
+                    console.log(`fight!!! ${state.currentLevel!.player.name} VS ${n.props?.name}`);
                 }
             })
             if(state.currentLevel.player.currentPath.length == 0)

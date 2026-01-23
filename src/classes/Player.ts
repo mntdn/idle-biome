@@ -7,7 +7,6 @@ import Item from './Item';
  */
 export default class Player extends Character {
 	isPlayer = true;
-	maxHP = 30;
 	name = "Player";
 	/**
 	 * Contains the path that elads you to the pointed direction
@@ -20,7 +19,7 @@ export default class Player extends Character {
 
 	htmlDescription(): string {
 		return `<b>Player</b><br />
-		<div>HP : ${this.currentHP}/${this.maxHP}</div>
+		<div>HP : ${this.props?.currentHP}/${this.props?.maxHP}</div>
 		<div>Attack : ${this.getTotal('attack')} / Defense : ${this.getTotal('defense')}</div>
 		`;
 	}

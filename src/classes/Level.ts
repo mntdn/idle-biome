@@ -78,7 +78,7 @@ export default class Level {
 
         for(var i = 0; i < 3; i++){
             let randPos = Array.from(this.tileIdMap)[Math.floor(Math.random() * this.tileIdMap.size)];
-            this.npcs.push(new NPC(randPos[1].position));
+            this.npcs.push(new NPC({startingPosition: randPos[1].position, maxHP: 10}));
             randPos[1].needsUpdate = true;
         }
         this.redraw();
@@ -95,7 +95,12 @@ export default class Level {
 
     showTileDetails(t: Tile) {
         let d = utils.getBySelector('#app .right-box .tile-details');
-        d.innerHTML = t.getHtmlDescription();
+        let descr = t.getHtmlDescription();
+        this.npcs.forEach(n => {
+            if(t.position.isEqual(n.currentPosition))
+                descr += `<div>${n.htmlDescription()}</div>`;
+        });
+        d.innerHTML = descr;
         // let div: HTMLElement = <HTMLPreElement>document.createElement('pre');
         // div.style = '';
         // div.textContent = JSON.stringify(t, null, 2);
