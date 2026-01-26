@@ -3,7 +3,9 @@ import path from "./shared/path";
 import './style/main.scss';
 import state from './state';
 import Level from "./classes/Level";
-import TilePos from "./classes/TilePos";
+import HexTilePos from "./classes/HexTilePos";
+
+import SquareGridLevel from "./classes/SquareGridLevel"
 
 // if I need to intercept keypresses
 // window.addEventListener("keydown", (e:KeyboardEvent) => {
@@ -24,8 +26,11 @@ if (dMenu) {
 	d.appendChild(utils.createButton('Remove Path', '', () => {path.removePath(curPath)}));
 }
 
-state.currentLevel = new Level();
-state.currentLevel.init();
-state.currentLevel!.movePlayer(new TilePos(0,0,0));
-state.currentLevel.showPlayerStats();
-document.onmousemove = state.currentLevel.mouseMoveHandler;
+// state.currentLevel = new Level();
+// state.currentLevel.init();
+// state.currentLevel!.movePlayer(new HexTilePos(0,0,0));
+// state.currentLevel.showPlayerStats();
+// document.onmousemove = state.currentLevel.mouseMoveHandler;
+
+let s = new SquareGridLevel();
+s.init();

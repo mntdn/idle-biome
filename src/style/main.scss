@@ -148,6 +148,16 @@ body {
 				}
 			}
 		}
+
+		.square-line {
+			display: flex;
+			justify-content: center;
+			.square{
+				width: 20px;
+				height: 20px;
+				border: 1px solid black;
+			}
+		}
 	}
 
     .triangle {

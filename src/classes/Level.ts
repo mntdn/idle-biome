@@ -10,7 +10,7 @@ import MouseMoveEventHandler from "./MouseMoveEventHandler";
 import NPC from "./NPC";
 import Player from "./Player";
 import Tile from "./Tile";
-import TilePos from "./TilePos";
+import HexTilePos from "./HexTilePos";
 
 export default class Level {
     /**
@@ -107,7 +107,7 @@ export default class Level {
         // d.appendChild(div);
     }
 
-    private getTileByPos(pos: TilePos): Tile | null {
+    private getTileByPos(pos: HexTilePos): Tile | null {
         let result: Tile | null = null;
         const posStr = `${pos.q}${pos.r}${pos.s}`;
         const id = this.tilePosMap.get(posStr);
@@ -161,12 +161,12 @@ export default class Level {
         return result;
     }
 
-    distance(a: TilePos, b: TilePos): number {
-        const vec: TilePos = new TilePos(a.q - b.q, a.r - b.r, a.s - b.s);
+    distance(a: HexTilePos, b: HexTilePos): number {
+        const vec: HexTilePos = new HexTilePos(a.q - b.q, a.r - b.r, a.s - b.s);
         return (Math.abs(vec.q) + Math.abs(vec.r) + Math.abs(vec.s)) / 2;
     }
 
-    findPath(end: TilePos): Vector[] {
+    findPath(end: HexTilePos): Vector[] {
         const start = this.player.currentPosition;
         const frontier: PriorityQueue[] = [];
         frontier.push({
@@ -231,7 +231,7 @@ export default class Level {
         return result;
     }
 
-    movePlayer(dest: TilePos) {
+    movePlayer(dest: HexTilePos) {
         this.getTileByPos(this.player.currentPosition)!.needsUpdate = true;
         this.player.moveTo(dest);
         this.getTileByPos(dest)!.needsUpdate = true;

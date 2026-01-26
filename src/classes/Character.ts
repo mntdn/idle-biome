@@ -2,7 +2,7 @@ import { propertyType } from "../enums/customTypes";
 import Vector from "../interfaces/Vector";
 import state from "../state";
 import Item from "./Item";
-import TilePos from "./TilePos";
+import HexTilePos from "./HexTilePos";
 import utils from "../shared/utils"
 import { CharacterProperties } from "../interfaces/CharacterProperties";
 
@@ -11,8 +11,8 @@ import { CharacterProperties } from "../interfaces/CharacterProperties";
  * It can be the current player or an NPC (cf. those classes for more details)
  */
 export default class Character {
-	currentPosition: TilePos;
-	currentDestination: TilePos;
+	currentPosition: HexTilePos;
+	currentDestination: HexTilePos;
 	currentPath: Vector[] = [];
 	currentPathId: string = "";
 	props: CharacterProperties|undefined;
@@ -21,7 +21,7 @@ export default class Character {
     constructor(_props: CharacterProperties);
     constructor(_props?: CharacterProperties) {
 		this.setHealth(_props?.maxHP ?? 20);
-		this.currentPosition = _props?.startingPosition ?? new TilePos(0, 0, 0)
+		this.currentPosition = _props?.startingPosition ?? new HexTilePos(0, 0, 0)
 		this.currentDestination = this.currentPosition;
 	}
 
@@ -33,7 +33,7 @@ export default class Character {
 		}
 	}
 
-    moveTo(t: TilePos) {
+    moveTo(t: HexTilePos) {
         this.currentPosition = t;
     }
 

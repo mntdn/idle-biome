@@ -1,8 +1,8 @@
 import Item from "../classes/Item";
-import TilePos from "../classes/TilePos";
+import HexTilePos from "../classes/HexTilePos";
 
 export interface CharacterProperties {
-    startingPosition?: TilePos;
+    startingPosition?: HexTilePos;
     inventory?: Item[];
     maxHP?: number;
     name?: string;

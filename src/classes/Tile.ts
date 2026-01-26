@@ -2,7 +2,7 @@ import { ETileType } from '../enums/ETileType';
 import utils from '../shared/utils';
 import TileStats from './TileStats';
 import state from '../state';
-import TilePos from './TilePos';
+import HexTilePos from './HexTilePos';
 import { Point } from '../interfaces/Point';
 import Popup from './Popup';
 
@@ -10,7 +10,7 @@ export default class Tile {
     tileType: ETileType;
     col: number;
     line: number;
-    position: TilePos;
+    position: HexTilePos;
     color: string;
     colorHover: string;
     colorBorder: string;
@@ -45,7 +45,7 @@ export default class Tile {
         this.line = line;
         this.col = col;
         let r = line - (col - (col & 1)) / 2;
-        this.position = new TilePos(col, r, -1 * col - r);
+        this.position = new HexTilePos(col, r, -1 * col - r);
         this.id = '_' + utils.guid();
         this.color = this.getColorByType(false);
         this.colorHover = this.getColorByType(true);

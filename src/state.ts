@@ -1,7 +1,7 @@
 import Level from "./classes/Level";
 import Line from "./classes/Line";
 import Tile from "./classes/Tile";
-import TilePos from "./classes/TilePos";
+import HexTilePos from "./classes/HexTilePos";
 
 /**
  * The game state
@@ -14,7 +14,7 @@ class State {
     currentLevel: Level | null = null;
     line: Line = new Line();
     currentTile: Tile | null = null;
-    pathPos: TilePos[] = [];
+    pathPos: HexTilePos[] = [];
     debugMode: boolean = false;
     tickTimeMs: number = 1000;
     currentTimeout: number = 0;

@@ -1,4 +1,4 @@
-export default class TilePos {
+export default class HexTilePos {
 	q: number;
 	r: number;
 	s: number;
@@ -9,7 +9,7 @@ export default class TilePos {
 		this.s = _s;
 	}
 
-    isEqual(p: TilePos | null | undefined): boolean {
+    isEqual(p: HexTilePos | null | undefined): boolean {
 		if(p === null || p === undefined)
 			return false;
         return p.q === this.q && p.r === this.r && p.s === this.s;
