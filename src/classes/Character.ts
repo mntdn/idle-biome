@@ -1,18 +1,16 @@
 import { propertyType } from "../enums/customTypes";
 import Vector from "../interfaces/Vector";
-import state from "../state";
-import Item from "./Item";
-import HexTilePos from "./HexTilePos";
 import utils from "../shared/utils"
 import { CharacterProperties } from "../interfaces/CharacterProperties";
+import SquareTilePos from "./SquareTilePos";
 
 /**
  * This class defines a basic Character type.
  * It can be the current player or an NPC (cf. those classes for more details)
  */
 export default class Character {
-	currentPosition: HexTilePos;
-	currentDestination: HexTilePos;
+	currentPosition: SquareTilePos;
+	currentDestination: SquareTilePos;
 	currentPath: Vector[] = [];
 	currentPathId: string = "";
 	props: CharacterProperties|undefined;
@@ -21,7 +19,7 @@ export default class Character {
     constructor(_props: CharacterProperties);
     constructor(_props?: CharacterProperties) {
 		this.setHealth(_props?.maxHP ?? 20);
-		this.currentPosition = _props?.startingPosition ?? new HexTilePos(0, 0, 0)
+		this.currentPosition = _props?.startingPosition ?? new SquareTilePos(0, 0)
 		this.currentDestination = this.currentPosition;
 	}
 
@@ -33,7 +31,7 @@ export default class Character {
 		}
 	}
 
-    moveTo(t: HexTilePos) {
+    moveTo(t: SquareTilePos) {
         this.currentPosition = t;
     }
 
@@ -41,11 +39,12 @@ export default class Character {
 	 * goes to the next tile in the currentPath
 	 */
 	goToDestination() {
-		if(this.currentPath.length > 0) {
-			var p = this.currentPath.shift();
-			var dest = state.currentLevel!.getTileByShortString(p!.to);
-			state.currentLevel!.movePlayer(dest!.position);
-		}
+		// if(this.currentPath.length > 0) {
+		// 	var p = this.currentPath.shift();
+		// 	var dest = state.currentLevel!.getTileByShortString(p!.to);
+		// 	state.currentLevel!.movePlayer(dest!.position);
+		// }
+
 	}
 
 	/**

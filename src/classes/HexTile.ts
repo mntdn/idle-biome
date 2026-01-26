@@ -6,7 +6,7 @@ import HexTilePos from './HexTilePos';
 import { Point } from '../interfaces/Point';
 import Popup from './Popup';
 
-export default class Tile {
+export default class HexTile {
     tileType: ETileType;
     col: number;
     line: number;
@@ -97,31 +97,6 @@ export default class Tile {
         return result;
     }
 
-    /**
-     * 
-     * @returns The player HTML portion of the tile
-     */
-    private getPlayerContent() {
-        let result = '';
-        if (!this.isHidden && this.position.isEqual(state.currentLevel?.player.currentPosition))
-            result = '@';
-        if(state.debugMode)
-            result += `<br /><span class="sm">${this.position.toString()}</span>`
-        return result;
-    }
-
-    private getOtherContent() {
-        let result = '';
-        if (!this.isHidden) {
-            state.currentLevel!.npcs.forEach((n) => {
-                if (this.position.isEqual(n.currentPosition)){
-                    result = '+';
-                }
-            });
-        }
-        return result;
-    }
-
     private getStyle() {
         return `--hex-fill-color:${this.color};--hex-fill-color-hover:${this.colorHover};--hex-border-color: ${this.colorBorder};--hex-border:${this.borderSize}px`;
     }
@@ -140,7 +115,7 @@ export default class Tile {
         };
         hex.onclick = (e: any) => {
             this.onClick();
-            state.currentTile = this;
+            // state.currentTile = this;
             // this.tileType = ETileType.dirt;
             // // showNeighbors(t);
             // this.stats.addWaterPerTick(2);
@@ -159,7 +134,7 @@ export default class Tile {
         innerHex.classList = 'hexagon-inner';
         let otherDiv = <HTMLDivElement>(document.createElement('div'));
         otherDiv.classList = 'other'
-        otherDiv.innerHTML = this.getOtherContent();
+        otherDiv.innerHTML = 'O';
 
         //
         // Let's forget about popups for now, they're kind of annoying...
@@ -181,7 +156,7 @@ export default class Tile {
         
         let playerDiv = <HTMLDivElement>(document.createElement('div'));
         playerDiv.classList = 'player'
-        playerDiv.innerHTML = this.getPlayerContent();
+        playerDiv.innerHTML = 'P';
         innerHex.appendChild(otherDiv);
         innerHex.appendChild(playerDiv);
         hex.appendChild(innerHex);
@@ -200,10 +175,10 @@ export default class Tile {
         if (hexHtml) {
             let otherDiv = hexHtml.getElementsByClassName('other');
             if(otherDiv.length > 0)
-                otherDiv[0].innerHTML = this.getOtherContent();
+                otherDiv[0].innerHTML = 'O';
             let playerDiv = hexHtml.getElementsByClassName('player');
             if(playerDiv.length > 0)
-                playerDiv[0].innerHTML = this.getPlayerContent();
+                playerDiv[0].innerHTML = 'P';
         }
         this.needsUpdate = false;
     }
@@ -213,13 +188,6 @@ export default class Tile {
      */
     getPopupContent():string{
         let result = '';
-
-        // adding the local NPCS
-        state.currentLevel!.npcs.forEach((n) => {
-            if (this.position.isEqual(n.currentPosition)){
-                result += n.htmlDescription();
-            }
-        });
 
         return result;
     }
@@ -281,15 +249,11 @@ export default class Tile {
             this.isHidden = true;
             this.tileType = ETileType.sand;
             this.needsUpdate = true;
-            state.currentLevel!.redraw();
-            menu.remove();
-        }))
-        menu.appendChild(utils.createButton('Move player', buttonStyle, () => {
-            state.currentLevel!.movePlayer(this.position);
+            state.biome!.redraw();
             menu.remove();
         }))
         menu.appendChild(utils.createButton('Player go to', buttonStyle, () => {
-            state.currentLevel!.player.currentPath = state.currentLevel!.findPath(this.position);
+            // state.currentLevel!.player.currentPath = state.currentLevel!.findPath(this.position);
             menu.remove();
         }))
         // menu.appendChild(utils.createButton('GO !!!', buttonStyle, () => {

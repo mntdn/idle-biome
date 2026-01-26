@@ -5,14 +5,11 @@ import Vector from "../interfaces/Vector";
 import path from "../shared/path";
 import utils from "../shared/utils";
 import state from "../state";
-import Character from "./Character";
 import MouseMoveEventHandler from "./MouseMoveEventHandler";
-import NPC from "./NPC";
-import Player from "./Player";
-import Tile from "./Tile";
+import HexTile from "./HexTile";
 import HexTilePos from "./HexTilePos";
 
-export default class Level {
+export default class Biome {
     /**
      * Map of tile q r s coords (as ${q}${r}${s}) and its id
      * used to quickly update a tile props depending on its coordinates
@@ -22,9 +19,7 @@ export default class Level {
     /** 
      * Map of tile id to its Tile content for quick access
      */ 
-    tileIdMap: Map<string, Tile> = new Map();
-    player: Player = new Player();
-    npcs: Character[] = [];
+    tileIdMap: Map<string, HexTile> = new Map();
     mouseMoveHandler: (e: MouseEvent) => void = () => {};
     mouseMoveEventHandler: MouseMoveEventHandler = new MouseMoveEventHandler();
 
@@ -44,7 +39,7 @@ export default class Level {
             let line = i - state.hexagonalGridSize + 1;
             for (let j = 0; j < nbHexPerLine; j++) {
                 let col = j - state.hexagonalGridSize + 1;
-                let t = new Tile(line, col, ETileType.water);
+                let t = new HexTile(line, col, ETileType.water);
                 if (!t.isHidden) {
                     // we only store the position of the hex if it is shown
                     this.tilePosMap.set(
@@ -55,11 +50,11 @@ export default class Level {
                 }
 
                 t.onHover = () => {
-                    if(!t.position.isEqual(this.player.currentPosition)) {
-                        // this.player.currentDestination = t.position;
-                        this.player.tempPath = this.findPath(t.position);
-                        this.updatePathDrawings();
-                    }
+                    // if(!t.position.isEqual(this.player.currentPosition)) {
+                    //     // this.player.currentDestination = t.position;
+                    //     this.player.tempPath = this.findPath(t.position);
+                    //     this.updatePathDrawings();
+                    // }
                     this.showTileDetails(t);
                 }
                 t.onClick = () => {
@@ -76,30 +71,14 @@ export default class Level {
         }
         d.appendChild(divContainer);
 
-        for(var i = 0; i < 3; i++){
-            let randPos = Array.from(this.tileIdMap)[Math.floor(Math.random() * this.tileIdMap.size)];
-            this.npcs.push(new NPC({startingPosition: randPos[1].position, maxHP: 10}));
-            randPos[1].needsUpdate = true;
-        }
         this.redraw();
         this.mouseMoveHandler = this.mouseHandler;
     }
 
-    /**
-     * Shows the current player stats in the div with the player-stats class
-     */
-    showPlayerStats() {
-        let d = utils.getBySelector('#app .right-box .player-stats');
-        d.innerHTML = this.player.htmlDescription();
-    }
 
-    showTileDetails(t: Tile) {
+    showTileDetails(t: HexTile) {
         let d = utils.getBySelector('#app .right-box .tile-details');
         let descr = t.getHtmlDescription();
-        this.npcs.forEach(n => {
-            if(t.position.isEqual(n.currentPosition))
-                descr += `<div>${n.htmlDescription()}</div>`;
-        });
         d.innerHTML = descr;
         // let div: HTMLElement = <HTMLPreElement>document.createElement('pre');
         // div.style = '';
@@ -107,8 +86,8 @@ export default class Level {
         // d.appendChild(div);
     }
 
-    private getTileByPos(pos: HexTilePos): Tile | null {
-        let result: Tile | null = null;
+    private getTileByPos(pos: HexTilePos): HexTile | null {
+        let result: HexTile | null = null;
         const posStr = `${pos.q}${pos.r}${pos.s}`;
         const id = this.tilePosMap.get(posStr);
         if (id !== undefined && this.tileIdMap.has(id)) {
@@ -117,8 +96,8 @@ export default class Level {
         return result;
     }
 
-    getTileByShortString(pos: string): Tile | null {
-        let result: Tile | null = null;
+    getTileByShortString(pos: string): HexTile | null {
+        let result: HexTile | null = null;
         const id = this.tilePosMap.get(pos);
         if (id !== undefined && this.tileIdMap.has(id)) {
             result = this.tileIdMap.get(id)!;
@@ -126,7 +105,7 @@ export default class Level {
         return result;
     }
 
-    private getHexIdFromDepl(tile: Tile, shift: TileShift) {
+    private getHexIdFromDepl(tile: HexTile, shift: TileShift) {
         let tileCoord = `${tile.position.q + shift.qShift}${tile.position.r + shift.rShift}${tile.position.s + shift.sShift}`;
         if (this.tilePosMap.has(tileCoord)) {
             let t = this.tilePosMap.get(tileCoord);
@@ -141,8 +120,8 @@ export default class Level {
      * @param onlyTraversable Returns only the traversable tiles
      * @returns A list of all the neighbors
      */
-    getNeighbors(tile: Tile, onlyTraversable: boolean) {
-        let result: Tile[] = [];
+    getNeighbors(tile: HexTile, onlyTraversable: boolean) {
+        let result: HexTile[] = [];
         let allDepl: TileShift[] = [
             { qShift: 1, rShift: 0, sShift: -1 },
             { qShift: 1, rShift: -1, sShift: 0 },
@@ -167,7 +146,7 @@ export default class Level {
     }
 
     findPath(end: HexTilePos): Vector[] {
-        const start = this.player.currentPosition;
+        const start = new HexTilePos(0,0,0);
         const frontier: PriorityQueue[] = [];
         frontier.push({
             position: start?.toShortString(),
@@ -231,26 +210,26 @@ export default class Level {
         return result;
     }
 
-    movePlayer(dest: HexTilePos) {
-        this.getTileByPos(this.player.currentPosition)!.needsUpdate = true;
-        this.player.moveTo(dest);
-        this.getTileByPos(dest)!.needsUpdate = true;
-        this.redraw();
-    }
+    // movePlayer(dest: HexTilePos) {
+    //     this.getTileByPos(this.player.currentPosition)!.needsUpdate = true;
+    //     this.player.moveTo(dest);
+    //     this.getTileByPos(dest)!.needsUpdate = true;
+    //     this.redraw();
+    // }
 
-    /**
-     * updates all the drawn paths of all the moving things
-     */
-    updatePathDrawings() {
-        if(this.player.currentPathId.length > 0)
-            path.removePath(this.player.currentPathId);
-        this.player.currentPathId = path.drawPath(this.player.currentPath, 'darkorange');
+    // /**
+    //  * updates all the drawn paths of all the moving things
+    //  */
+    // updatePathDrawings() {
+    //     if(this.player.currentPathId.length > 0)
+    //         path.removePath(this.player.currentPathId);
+    //     this.player.currentPathId = path.drawPath(this.player.currentPath, 'darkorange');
 
-        if(this.player.tempPathId.length > 0)
-            path.removePath(this.player.tempPathId);
-        if(!path.samePath(this.player.tempPath, this.player.currentPath))
-            this.player.tempPathId = path.drawPath(this.player.tempPath, 'grey');
-    }
+    //     if(this.player.tempPathId.length > 0)
+    //         path.removePath(this.player.tempPathId);
+    //     if(!path.samePath(this.player.tempPath, this.player.currentPath))
+    //         this.player.tempPathId = path.drawPath(this.player.tempPath, 'grey');
+    // }
 
     redraw() {
         this.tileIdMap.forEach((v) => {
