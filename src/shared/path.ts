@@ -14,8 +14,8 @@ const drawPath = (vectors: Vector[], color: string): string => {
     vectors.forEach((v) => {
         const l = new Line();
         l.id = pId + i++;
-        let tFrom = state.currentLevel!.getTileByShortString(v.from);
-        let tTo = state.currentLevel!.getTileByShortString(v.to);
+        let tFrom = state.biome!.getTileByShortString(v.from);
+        let tTo = state.biome!.getTileByShortString(v.to);
         if (tFrom && tTo) {
             l.addPoint(tFrom.getPixelCoords(false));
             l.addPoint(tTo.getPixelCoords(false));

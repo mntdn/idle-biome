@@ -40,7 +40,7 @@ export default class SquareTile {
     onHover: () => void;
     onClick: () => void;
 
-    constructor(line: number, col: number, tileType: ETileType) {
+    constructor(col: number, line: number, tileType: ETileType) {
         this.tileType = tileType;
         this.line = line;
         this.col = col;
@@ -144,22 +144,23 @@ export default class SquareTile {
         square.appendChild(bgLayer);
         let charLayer: HTMLElement = <HTMLDivElement>document.createElement('div');
         charLayer.classList = 'character';
+        charLayer.innerHTML = this.getPlayerContent();
         square.appendChild(charLayer);
         return square;
     }
 
-    updateTile() {
-        this.color = this.getColorByType(false);
-        this.colorHover = this.getColorByType(true);
-        var square = document.querySelector(`[data-squareid='${this.id}'] .square-inside`) as HTMLElement;
-        if (square) {
-            square.style = this.getStyle();
-            // console.log(hex.style);
-            var charLayer = square.getElementsByClassName('character');
-            charLayer[0].innerHTML = this.getPlayerContent();
-        }
-        this.needsUpdate = false;
-    }
+    // updateTile() {
+    //     this.color = this.getColorByType(false);
+    //     this.colorHover = this.getColorByType(true);
+    //     var square = document.querySelector(`[data-squareid='${this.id}'] .square-inside`) as HTMLElement;
+    //     if (square) {
+    //         square.style = this.getStyle();
+    //         // console.log(hex.style);
+    //         var charLayer = square.getElementsByClassName('character');
+    //         charLayer[0].innerHTML = this.getPlayerContent();
+    //     }
+    //     this.needsUpdate = false;
+    // }
 
     /**
      * Returns the HTML to put inside the popup with all the things happening on this tile

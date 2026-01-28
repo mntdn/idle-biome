@@ -14,10 +14,10 @@ export default class SquareTilePos {
     }
 
 	toString() {
-		return `(${this.col},${this.line})`;
+		return `${this.col},${this.line}`;
 	}
 
 	toShortString() {
-		return `${this.col}${this.line}`;
+		return `${this.col}_${this.line}`;
 	}
 }

@@ -1,5 +1,4 @@
 import Item from "../classes/Item";
-import HexTilePos from "../classes/HexTilePos";
 import SquareTilePos from "../classes/SquareTilePos";
 
 export interface CharacterProperties {

@@ -24,28 +24,28 @@ const fight = (c1: Character, c2: Character): number => {
     while(!done){
         // the fastest attacker hits
         if(c1First)
-            c2.currentHP -= c1Attack - c2Defense < 0 ? 0 : c1Attack - c2Defense;
+            c2.props!.currentHP! -= c1Attack - c2Defense < 0 ? 0 : c1Attack - c2Defense;
         else
-            c1.currentHP -= c2Attack - c1Defense < 0 ? 0 : c2Attack - c1Defense;
+            c1.props!.currentHP! -= c2Attack - c1Defense < 0 ? 0 : c2Attack - c1Defense;
 
         // if someone's HP is 0 or less, the fight is over and we have a winner
-        if(c2.currentHP <= 0 || c1.currentHP <= 0)
+        if(c2.props!.currentHP! <= 0 || c1.props!.currentHP! <= 0)
             done = true;
         else {
             // the fight is not finished, the slower attacker hits
             if(c1First)
-                c1.currentHP -= c2Attack - c1Defense < 0 ? 0 : c2Attack - c1Defense;
+                c1.props!.currentHP! -= c2Attack - c1Defense < 0 ? 0 : c2Attack - c1Defense;
             else
-                c2.currentHP -= c1Attack - c2Defense < 0 ? 0 : c1Attack - c2Defense;
+                c2.props!.currentHP! -= c1Attack - c2Defense < 0 ? 0 : c1Attack - c2Defense;
         }
         // if someone's HP is 0 or less, the fight is over and we have a winner
-        if(c2.currentHP <= 0 || c1.currentHP <= 0)
+        if(c2.props!.currentHP! <= 0 || c1.props!.currentHP! <= 0)
             done = true;
     }
 
     // we determine the winner by who has HP left
-    return c1.currentHP == c2.currentHP ? 0 : 
-            c1.currentHP > c2.currentHP ? 1 : 2;
+    return c1.props!.currentHP! == c2.props!.currentHP! ? 0 : 
+            c1.props!.currentHP! > c2.props!.currentHP! ? 1 : 2;
 }
 
 const _ = {

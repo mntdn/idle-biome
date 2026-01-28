@@ -47,9 +47,9 @@ const getBySelector = (selector: string): HTMLElement => {
  */
 const sumProp = (c: Character, prop: propertyType): number => {
     let base = 0;
-    if(prop === 'attackSpeed')
-        base = c.attackSpeed;
-    let result = c.inventory.map(i => (i as any)[prop]).reduce((a, c) => a + c, 0);
+    if(prop === 'attackSpeed' && c.props)
+        base = c.props.attackSpeed ?? 0;
+    let result = c.props?.inventory?.map(i => (i as any)[prop]).reduce((a, c) => a + c, 0);
     return base + (isNaN(result) ? 0 : result);
 }
 
