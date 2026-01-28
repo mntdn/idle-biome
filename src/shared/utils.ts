@@ -19,6 +19,13 @@ const guid = () => {
     );
 }
 
+const randEnumValue = <T extends object>(enumObj: T): T[keyof T] => {
+  const enumValues = Object.values(enumObj);
+  const index = Math.floor(Math.random() * enumValues.length);
+  
+  return enumValues[index];
+}
+
 const round = (n: number) => {
     return (Math.round(n * 1000) / 1000);
 }
@@ -62,7 +69,8 @@ const _ = {
     guid,
     getBySelector,
     round,
-    sumProp
+    sumProp,
+    randEnumValue
 }
 
 export default _;

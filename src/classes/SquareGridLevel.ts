@@ -4,12 +4,21 @@ import utils from "../shared/utils";
 import Character from "./Character";
 import Player from "./Player";
 import SquareTile from "./SquareTile"
+import SquareTilePos from "./SquareTilePos";
 
 export default class SquareGridLevel {    
     player: Player = new Player();
     npcs: Character[] = [];
-    nbLines: number = 5;
-    nbCol: number = 15;
+    /**
+     * The total size of the level
+     */
+    nbLinesTotal: number = 50;
+    nbColTotal: number = 50;
+    /**
+     * The size of the displayed portion of the level
+     */
+    nbLinesToDisplay: number = 5;
+    nbColToDisplay: number = 15;
     /**
      * Map of tile col line coords (as short version) and its id
      * used to quickly update a tile props depending on its coordinates
@@ -24,19 +33,37 @@ export default class SquareGridLevel {
         let divContainer: HTMLElement = <HTMLDivElement>document.createElement('div');
         divContainer.classList = 'tiles-container';
 
-        for (let i = 0; i < this.nbLines; i++) {
-            let l: HTMLElement = <HTMLDivElement>document.createElement('div');
-            l.classList = 'square-line';
-            for(let j = 0; j < this.nbCol; j++) {
-                let s = new SquareTile(i,j,ETileType.water);
-                s.needsUpdate = true;
-                l.appendChild(s.getHtml());
+        /**
+         * Level generation
+         */
+        for (let i = 0; i < this.nbLinesTotal; i++) {
+            for(let j = 0; j < this.nbColTotal; j++) {
+                let s = new SquareTile(i,j,utils.randEnumValue(ETileType));
                 this.tileIdMap.set(s.id, s);
                 this.tilePosMap.set(s.position.toShortString(), s.id);
+            }
+        }
+        
+        /**
+         * Grid to display the level
+         */
+        for (let i = 0; i < this.nbLinesToDisplay; i++) {
+            let l: HTMLElement = <HTMLDivElement>document.createElement('div');
+            l.classList = 'square-line';
+            for(let j = 0; j < this.nbColToDisplay; j++) {
+                // get the tile at this pos (start at 0,0)
+                let tile = this.tileIdMap.get(this.tilePosMap.get(new SquareTilePos(j,i).toShortString())!)!;
+                let square: HTMLElement = <HTMLDivElement>document.createElement('div');
+                square.dataset.squareid = tile.id;
+                square.classList = `square`;
+                tile.needsUpdate = true;
+                square.appendChild(tile.getHtml());
+                l.appendChild(square);
             }
             divContainer.appendChild(l);
         }
         d.appendChild(divContainer);
+
         // for(var i = 0; i < 3; i++){
         //     let randPos = Array.from(this.tileIdMap)[Math.floor(Math.random() * this.tileIdMap.size)];
         //     this.npcs.push(new NPC({startingPosition: randPos[1].position, maxHP: 10}));

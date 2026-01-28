@@ -2,7 +2,6 @@ import { ETileType } from '../enums/ETileType';
 import utils from '../shared/utils';
 import TileStats from './TileStats';
 import state from '../state';
-import HexTilePos from './HexTilePos';
 import { Point } from '../interfaces/Point';
 import Popup from './Popup';
 import SquareTilePos from './SquareTilePos';
@@ -119,14 +118,14 @@ export default class SquareTile {
         return result;
     }
 
-    private getStyle() {
-        return `--hex-fill-color:${this.color};--hex-fill-color-hover:${this.colorHover};--hex-border-color: ${this.colorBorder};--hex-border:${this.borderSize}px`;
+    getStyle() {
+        return `--square-background-color:${this.color};`;
     }
 
     getHtml() {
         let square: HTMLElement = <HTMLDivElement>document.createElement('div');
-        square.id = this.id;
-        square.classList = `square`;
+        // square.id = this.id;
+        square.classList = `square-inside`;
         square.style = this.getStyle();
         square.onmouseover = () => {
             // console.log("over all hex", hex.id);
@@ -152,7 +151,7 @@ export default class SquareTile {
     updateTile() {
         this.color = this.getColorByType(false);
         this.colorHover = this.getColorByType(true);
-        var square = document.getElementById(this.id);
+        var square = document.querySelector(`[data-squareid='${this.id}'] .square-inside`) as HTMLElement;
         if (square) {
             square.style = this.getStyle();
             // console.log(hex.style);
