@@ -5,7 +5,7 @@ import Character from "../classes/Character";
  * @param c1 Character 1
  * @param c2 Character 2
  * @returns 
- *          0 if it's a draw (equal strength or no looser after a number of turns)
+ *          0 if it's a draw (equal strength or no looser after 20 turns)
  *          1 if c1 wins
  *          2 if c2 wins 
  */
@@ -14,6 +14,7 @@ const fight = (c1: Character, c2: Character): number => {
     let c2Attack = c2.getTotal('attack');
     let c1Defense = c1.getTotal('defense');
     let c2Defense = c2.getTotal('defense');
+    let nbMaxTurns = 20;
     // if they have the same attack and defense, nothing will happen, it's a draw
     if((c1Attack > 0 && c1Attack === c2Defense) || (c2Attack > 0 && c1Defense === c2Attack))
         return 0;
@@ -40,6 +41,8 @@ const fight = (c1: Character, c2: Character): number => {
         }
         // if someone's HP is 0 or less, the fight is over and we have a winner
         if(c2.props!.currentHP! <= 0 || c1.props!.currentHP! <= 0)
+            done = true;
+        if(nbMaxTurns-- == 0)
             done = true;
     }
 

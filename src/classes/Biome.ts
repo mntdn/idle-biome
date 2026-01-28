@@ -2,7 +2,6 @@ import { ETileType } from "../enums/ETileType";
 import { PriorityQueue } from "../interfaces/PriorityQueue";
 import TileShift from "../interfaces/TileShift";
 import Vector from "../interfaces/Vector";
-import path from "../shared/path";
 import utils from "../shared/utils";
 import state from "../state";
 import MouseMoveEventHandler from "./MouseMoveEventHandler";
@@ -86,15 +85,15 @@ export default class Biome {
         // d.appendChild(div);
     }
 
-    private getTileByPos(pos: HexTilePos): HexTile | null {
-        let result: HexTile | null = null;
-        const posStr = `${pos.q}${pos.r}${pos.s}`;
-        const id = this.tilePosMap.get(posStr);
-        if (id !== undefined && this.tileIdMap.has(id)) {
-            result = this.tileIdMap.get(id)!;
-        }
-        return result;
-    }
+    // private getTileByPos(pos: HexTilePos): HexTile | null {
+    //     let result: HexTile | null = null;
+    //     const posStr = `${pos.q}${pos.r}${pos.s}`;
+    //     const id = this.tilePosMap.get(posStr);
+    //     if (id !== undefined && this.tileIdMap.has(id)) {
+    //         result = this.tileIdMap.get(id)!;
+    //     }
+    //     return result;
+    // }
 
     getTileByShortString(pos: string): HexTile | null {
         let result: HexTile | null = null;

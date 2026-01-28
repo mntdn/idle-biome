@@ -1,7 +1,8 @@
 import { direction } from "../enums/customTypes";
 import { ETileType } from "../enums/ETileType";
+import Combat from "../services/Combat";
 import utils from "../shared/utils";
-import Character from "./Character";
+import NPC from "./NPC";
 import Player from "./Player";
 import SquareTile from "./SquareTile"
 import SquareTilePos from "./SquareTilePos";
@@ -9,12 +10,12 @@ import SquareTilePos from "./SquareTilePos";
 export default class SquareGridLevel {    
     player: Player = new Player();
     playerStartPosition: SquareTilePos = new SquareTilePos(5,5);
-    npcs: Character[] = [];
+    npcs: NPC[] = [];
     /**
      * The total size of the level
      */
-    nbLinesTotal: number = 50;
-    nbColTotal: number = 50;
+    nbLinesTotal: number = 20;
+    nbColTotal: number = 20;
     /**
      * The size of the displayed portion of the level
      */
@@ -68,19 +69,40 @@ export default class SquareGridLevel {
         d.appendChild(divContainer);
         this.player.moveTo(this.playerStartPosition);
 
-        // for(var i = 0; i < 3; i++){
-        //     let randPos = Array.from(this.tileIdMap)[Math.floor(Math.random() * this.tileIdMap.size)];
-        //     this.npcs.push(new NPC({startingPosition: randPos[1].position, maxHP: 10}));
-        //     randPos[1].needsUpdate = true;
-        // }
+        for(var i = 0; i < 30; i++){
+            let randPos = new SquareTilePos(utils.getRandomInt(0, this.nbColTotal), utils.getRandomInt(0, this.nbLinesTotal));
+            this.npcs.push(new NPC({startingPosition: randPos, currentHP: 10, maxHP: 10}));
+        }
     }
 
     movePlayer(dir: direction) {
+        let newPos = structuredClone(this.player.currentPosition);
         switch(dir) {
-            case 'up': this.player.currentPosition.line--; break;
-            case 'right': this.player.currentPosition.col++; break;
-            case 'down': this.player.currentPosition.line++; break;
-            case 'left': this.player.currentPosition.col--; break;
+            case 'up': newPos.line--; break;
+            case 'right': newPos.col++; break;
+            case 'down': newPos.line++; break;
+            case 'left': newPos.col--; break;
+        }
+        // if we would exit the level, we just return
+        if(newPos.col < 0 || newPos.col >= this.nbColTotal || newPos.line < 0 || newPos.line >= this.nbLinesTotal)
+            return;
+
+        // test if we hit a NPC in the new position
+        let npcHit: NPC|undefined;
+        this.npcs.forEach(n => {
+            if (!npcHit && n.currentPosition.isEqual(newPos))
+                npcHit = n;
+        });
+        if(npcHit){
+            let fightResult = Combat.fight(this.player, npcHit);
+            if(fightResult == 1){
+                console.log("COMBAT with", npcHit.name, "gagné")
+                this.player.currentPosition = newPos;
+            } else {
+                console.log("COMBAT with", npcHit.name, "perdu")
+            }
+        } else {
+            this.player.currentPosition = newPos;
         }
     }
 

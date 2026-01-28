@@ -15,7 +15,8 @@ test('sum attack speed empty', () => {
 
 test('sum attack speed many', () => {
 	let c1: Character = new Character();
-	c1.props = { inventory: [new Item(1, 1, ''), new Item(2, 1, '')] };
+	c1.addItem(new Item(1, 1, ''))
+	c1.addItem(new Item(2, 1, ''));
 	expect(utils.sumProp(c1, 'attackSpeed')).toBe(1);
 });
 

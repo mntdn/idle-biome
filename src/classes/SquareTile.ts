@@ -144,7 +144,7 @@ export default class SquareTile {
         square.appendChild(bgLayer);
         let charLayer: HTMLElement = <HTMLDivElement>document.createElement('div');
         charLayer.classList = 'character';
-        charLayer.innerHTML = this.getPlayerContent();
+        charLayer.innerHTML = this.getPlayerContent() + this.getOtherContent();
         square.appendChild(charLayer);
         return square;
     }
@@ -254,6 +254,6 @@ export default class SquareTile {
         //     menu.remove();
         // }))
         // root.appendChild(menu);
-        console.log("click")
+        console.log("click", e)
     }
 }

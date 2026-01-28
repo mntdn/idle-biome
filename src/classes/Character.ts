@@ -3,6 +3,7 @@ import Vector from "../interfaces/Vector";
 import utils from "../shared/utils"
 import { CharacterProperties } from "../interfaces/CharacterProperties";
 import SquareTilePos from "./SquareTilePos";
+import Item from "./Item";
 
 /**
  * This class defines a basic Character type.
@@ -13,12 +14,13 @@ export default class Character {
 	currentDestination: SquareTilePos;
 	currentPath: Vector[] = [];
 	currentPathId: string = "";
-	props: CharacterProperties|undefined;
+	props: CharacterProperties = { inventory: [] };
 
 	constructor();
     constructor(_props: CharacterProperties);
     constructor(_props?: CharacterProperties) {
 		this.setHealth(_props?.maxHP ?? 20);
+		this.setAttackSpeed(_props?.attackSpeed ?? 1);
 		this.currentPosition = _props?.startingPosition ?? new SquareTilePos(0, 0)
 		this.currentDestination = this.currentPosition;
 	}
@@ -29,6 +31,17 @@ export default class Character {
 			maxHP: hp,
 			currentHP: hp,
 		}
+	}
+
+	setAttackSpeed(speed: number){
+		this.props = {
+			...this.props,
+			attackSpeed: speed
+		}
+	}
+
+	addItem(i: Item){
+		this.props.inventory?.push(i);
 	}
 
     moveTo(t: SquareTilePos) {
