@@ -27,7 +27,7 @@ export default class Biome {
     init() {
         let d = utils.getBySelector('#app .left-box');
         let divContainer: HTMLElement = <HTMLDivElement>document.createElement('div');
-        divContainer.classList = 'tiles-container';
+        divContainer.classList = 'hex-tiles-container';
 
         var nbHexPerLine = 2 * state.hexagonalGridSize - 1;
         var nbLines = nbHexPerLine;

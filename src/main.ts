@@ -4,6 +4,7 @@ import './style/main.scss';
 import state from './state';
 
 import SquareGridLevel from "./classes/SquareGridLevel"
+import Biome from "./classes/Biome";
 
 // if I need to intercept keypresses
 window.addEventListener("keydown", (e:KeyboardEvent) => {
@@ -24,11 +25,11 @@ if (dMenu) {
 	d.appendChild(utils.createButton('Remove Path', '', () => {path.removePath(curPath)}));
 }
 
+state.biome = new Biome();
+state.biome.init();
+
 state.currentLevel = new SquareGridLevel();
 state.currentLevel.init();
 state.currentLevel.showPlayerStats();
 state.currentLevel.redraw();
 // document.onmousemove = state.currentLevel.mouseMoveHandler;
-
-// let s = new SquareGridLevel();
-// s.init();

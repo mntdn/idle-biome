@@ -23,7 +23,7 @@ class State {
     isGamePlaying: boolean = false;
     
     constructor() {
-        this.hexagonalGridSize = 5;
+        this.hexagonalGridSize = 3;
     }
     
     execTick() {

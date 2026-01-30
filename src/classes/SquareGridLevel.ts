@@ -2,6 +2,7 @@ import { direction } from "../enums/customTypes";
 import { ETileType } from "../enums/ETileType";
 import Combat from "../services/Combat";
 import utils from "../shared/utils";
+import Item from "./Item";
 import NPC from "./NPC";
 import Player from "./Player";
 import SquareTile from "./SquareTile"
@@ -68,10 +69,13 @@ export default class SquareGridLevel {
         }
         d.appendChild(divContainer);
         this.player.moveTo(this.playerStartPosition);
+        this.player.addItem(new Item(1, 0, 'dagger'));
 
         for(var i = 0; i < 30; i++){
             let randPos = new SquareTilePos(utils.getRandomInt(0, this.nbColTotal), utils.getRandomInt(0, this.nbLinesTotal));
-            this.npcs.push(new NPC({startingPosition: randPos, currentHP: 10, maxHP: 10}));
+            let n = new NPC({startingPosition: randPos, currentHP: 10, maxHP: 10});
+            n.addItem(new Item(1, 0, 'dagger'));
+            this.npcs.push(n);
         }
     }
 
@@ -104,10 +108,11 @@ export default class SquareGridLevel {
         } else {
             this.player.currentPosition = newPos;
         }
+        console.log(this.player.textDescription());
     }
 
     /**
-     * Redraws the while screen each time it's called by using the square ids to find their place
+     * Redraws the whole screen each time it's called by using the square ids to find their place
      */
     redraw() {
         let deltaCol = this.player.currentPosition.col - 5;
@@ -132,11 +137,7 @@ export default class SquareGridLevel {
             }
         }
 
-        // this.tileIdMap.forEach((v) => {
-        //     if(v.needsUpdate){
-        //         v.updateTile();
-        //     }
-        // })
+        this.showPlayerStats();
     }
 
     /**

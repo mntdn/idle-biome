@@ -23,4 +23,8 @@ export default class Player extends Character {
 		<div>Attack : ${this.getTotal('attack')} / Defense : ${this.getTotal('defense')}</div>
 		`;
 	}
+
+	textDescription(): string {
+		return `Player -- HP : ${this.props?.currentHP}/${this.props?.maxHP}, Attack : ${this.getTotal('attack')}, Defense : ${this.getTotal('defense')}`;
+	}
 }

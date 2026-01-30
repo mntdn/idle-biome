@@ -12,8 +12,8 @@ body {
 
 #app {
 	font-family: Arial, sans-serif;
-	--hex-width: 80px;
-	--hex-border: 2px;
+	--hex-width: 50px;
+	--hex-border: 1px;
 	--hex-spacing: -0.1px;
 	--hex-spacing-left: calc(var(--hex-spacing) * sin(60deg));
 	--hex-height: calc(var(--hex-width) * sin(60deg));
@@ -43,6 +43,7 @@ body {
 	.left-box {
 		flex: 3 0px;
 		height: calc(100% - var(--menu-height));
+		display: flex;
 	}
 
 	.right-box {
@@ -62,8 +63,9 @@ body {
 		}
 	}
 
-	.tiles-container {
+	.hex-tiles-container {
 		text-align: center;
+		width: 300px;
 
 		.hex-line {
 			padding-left: 10px;
@@ -148,6 +150,12 @@ body {
 				}
 			}
 		}
+
+	}
+
+	.tiles-container {
+		text-align: center;
+		flex: 1;
 
 		.square-line {
 			display: flex;
