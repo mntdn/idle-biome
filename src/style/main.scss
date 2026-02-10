@@ -177,6 +177,16 @@ body {
   					height: 100%;
 					position: absolute;
 					top: 0;
+
+					&.hidden{
+						background-color: black;
+					}
+					&.seen{
+						opacity: 0.3;
+					}
+					&.see {
+						opacity: 1;
+					}
 				}
 				.character{
 					width: 100%;

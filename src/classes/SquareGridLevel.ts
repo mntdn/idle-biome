@@ -40,7 +40,7 @@ export default class SquareGridLevel {
          */
         for (let i = 0; i < this.nbLinesTotal; i++) {
             for(let j = 0; j < this.nbColTotal; j++) {
-                let s = new SquareTile(j, i,utils.randEnumValue(ETileType));
+                let s = new SquareTile(j, i,ETileType.dirt);
                 this.tilePosMap.set(s.position.toShortString(), s);
             }
         }
@@ -62,7 +62,7 @@ export default class SquareGridLevel {
                 square.dataset.squareid = tile.id;
                 square.classList = `square`;
                 tile.needsUpdate = true;
-                square.appendChild(tile.getHtml());
+                // square.appendChild(tile.getHtml());
                 l.appendChild(square);
             }
             divContainer.appendChild(l);
@@ -71,7 +71,14 @@ export default class SquareGridLevel {
         this.player.moveTo(this.playerStartPosition);
         this.player.addItem(new Item(1, 0, 'dagger'));
 
-        for(var i = 0; i < 30; i++){
+        this.getTileFromPos(new SquareTilePos(7,5))!.isTraversable = false;
+        this.getTileFromPos(new SquareTilePos(7,5))!.tileType = ETileType.wall;
+        this.getTileFromPos(new SquareTilePos(7,6))!.isTraversable = false;
+        this.getTileFromPos(new SquareTilePos(7,6))!.tileType = ETileType.wall;
+        this.getTileFromPos(new SquareTilePos(7,7))!.isTraversable = false;
+        this.getTileFromPos(new SquareTilePos(7,7))!.tileType = ETileType.wall;
+
+        for(var i = 0; i < 3; i++){
             let randPos = new SquareTilePos(utils.getRandomInt(0, this.nbColTotal), utils.getRandomInt(0, this.nbLinesTotal));
             let n = new NPC({startingPosition: randPos, currentHP: 10, maxHP: 10});
             n.addItem(new Item(1, 0, 'dagger'));
@@ -89,6 +96,10 @@ export default class SquareGridLevel {
         }
         // if we would exit the level, we just return
         if(newPos.col < 0 || newPos.col >= this.nbColTotal || newPos.line < 0 || newPos.line >= this.nbLinesTotal)
+            return;
+
+        // we don't walk on non traversable tiles
+        if(!this.getTileFromPos(new SquareTilePos(newPos.col, newPos.line))?.isTraversable)
             return;
 
         // test if we hit a NPC in the new position
@@ -146,5 +157,9 @@ export default class SquareGridLevel {
     showPlayerStats() {
         let d = utils.getBySelector('#app .right-box .player-stats');
         d.innerHTML = this.player.htmlDescription();
+    }
+
+    getTileFromPos(pos: SquareTilePos): SquareTile | undefined {
+        return this.tilePosMap.get(pos.toShortString());
     }
 }

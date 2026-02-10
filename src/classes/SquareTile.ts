@@ -5,6 +5,7 @@ import state from '../state';
 import { Point } from '../interfaces/Point';
 import Popup from './Popup';
 import SquareTilePos from './SquareTilePos';
+import { TileDistance } from '../interfaces/TileDistance';
 
 export default class SquareTile {
     tileType: ETileType;
@@ -15,7 +16,14 @@ export default class SquareTile {
     colorHover: string;
     colorBorder: string;
     borderSize: number;
-    isHidden: boolean;
+    /**
+     * Indicated whether the tile has been seen by the player or not
+     */
+    hasSeen: boolean;
+    /**
+     * Indicates if the tile can be seen by the player right now
+     */
+    canSee: boolean;
     isTraversable: boolean;
     id: string;
     stats: TileStats;
@@ -50,10 +58,11 @@ export default class SquareTile {
         this.colorHover = this.getColorByType(true);
         this.colorBorder = 'grey';
         this.borderSize = 4;
-        this.isHidden = false;
+        this.hasSeen = false;
+        this.canSee = false;
         this.stats = new TileStats();
         this.cost = 1;
-        this.isTraversable = !this.isHidden;
+        this.isTraversable = true;
         this.onHover = () => { };
         this.onClick = () => { };
         this.needsUpdate = false;
@@ -61,14 +70,6 @@ export default class SquareTile {
         this.positionX = 0;
         this.positionY = 0;
         this.otherPopup = null;
-        // if (!this.isHidden) {
-        //     // we only store the position of the hex if it is shown
-        //     state.tilePosMap.set(
-        //         `${this.position.q}${this.position.r}${this.position.s}`,
-        //         this.id,
-        //     );
-        //     state.tileIdMap.set(this.id, this);
-        // }
     }
 
     getColorByType(isHover: boolean) {
@@ -85,6 +86,7 @@ export default class SquareTile {
                 result = `rgba(236,213,64,${alpha})`;
                 break;
             case ETileType.stone:
+            case ETileType.wall:
                 result = `rgba(132,132,130,${alpha})`;
                 break;
             default:
@@ -99,7 +101,7 @@ export default class SquareTile {
      */
     private getPlayerContent() {
         let result = '';
-        if (!this.isHidden && this.position.isEqual(state.currentLevel?.player.currentPosition))
+        if (this.position.isEqual(state.currentLevel?.player.currentPosition))
             result = '@';
         if(state.debugMode)
             result += `<br /><span class="sm">${this.position.toString()}</span>`
@@ -108,13 +110,11 @@ export default class SquareTile {
 
     private getOtherContent() {
         let result = '';
-        if (!this.isHidden) {
-            state.currentLevel!.npcs.forEach((n) => {
-                if (this.position.isEqual(n.currentPosition)){
-                    result = '+';
-                }
-            });
-        }
+        state.currentLevel!.npcs.forEach((n) => {
+            if (this.position.isEqual(n.currentPosition)){
+                result = '+';
+            }
+        });
         return result;
     }
 
@@ -140,7 +140,16 @@ export default class SquareTile {
             this.clickMenu(e);
         };
         let bgLayer: HTMLElement = <HTMLDivElement>document.createElement('div');
-        bgLayer.classList = 'background';
+        let bgClasses = ['background'];
+        if(state.currentLevel?.player.canSeeTile(this)) {
+            this.hasSeen = true;
+            bgClasses.push('see');
+        } else if (!this.hasSeen){
+            bgClasses.push('hidden');
+        }
+        if(this.hasSeen)
+            bgClasses.push('seen');
+        bgLayer.classList =  bgClasses.join(' ');
         square.appendChild(bgLayer);
         let charLayer: HTMLElement = <HTMLDivElement>document.createElement('div');
         charLayer.classList = 'character';
@@ -255,5 +264,33 @@ export default class SquareTile {
         // }))
         // root.appendChild(menu);
         console.log("click", e)
+    }
+
+    /**
+     * Gets the TileDistance between this tile and the indicated TilePos
+     * @param t The position of the Tile that we want to measure the distance to
+     */
+    getDistanceFromTile(t: SquareTilePos): TileDistance {
+        let result: TileDistance = {
+            diagonalDistance: 0,
+            distance: 0,
+            isBlocked: false
+        };
+        let dCol = this.position.col - t.col, dLine = this.position.line - t.line;
+        result.distance = Math.sqrt(Math.pow(dCol, 2) + Math.pow(dLine, 2));
+        result.diagonalDistance = Math.max(Math.abs(dCol), Math.abs(dLine));
+
+        // draws a line to the point to determine if an obstacle is in the way
+        let points = [];
+        for (let step = 0; step <= result.diagonalDistance; step++) {
+            let p = result.diagonalDistance === 0? 0.0 : step / result.diagonalDistance;
+            let curTile = state.currentLevel?.getTileFromPos(this.position.lerpPoint(t, p));
+            if(curTile && !curTile.isTraversable){
+                result.isBlocked = true
+                break;
+            }
+            points.push(curTile);
+        }
+        return result;
     }
 }

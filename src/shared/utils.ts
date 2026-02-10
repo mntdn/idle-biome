@@ -30,6 +30,10 @@ const round = (n: number) => {
     return (Math.round(n * 1000) / 1000);
 }
 
+const lerp = (start: number, end: number, t: number) => {
+    return start * (1.0 - t) + end * t;
+}
+
 const getBySelector = (selector: string): HTMLElement => {
 	var selResult = document.querySelector(selector);
 	if (selResult) {
@@ -70,7 +74,8 @@ const _ = {
     getBySelector,
     round,
     sumProp,
-    randEnumValue
+    randEnumValue,
+    lerp
 }
 
 export default _;

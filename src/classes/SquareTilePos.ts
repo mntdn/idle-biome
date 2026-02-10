@@ -1,3 +1,5 @@
+import utils from '../shared/utils';
+
 export default class SquareTilePos {
 	col: number;
 	line: number;
@@ -19,5 +21,12 @@ export default class SquareTilePos {
 
 	toShortString() {
 		return `${this.col}_${this.line}`;
+	}
+
+	lerpPoint(dest: SquareTilePos, t: number): SquareTilePos{
+		return new SquareTilePos(
+			Math.round(utils.lerp(this.col, dest.col, t)), 
+			Math.round(utils.lerp(this.line, dest.line, t))
+		);
 	}
 }

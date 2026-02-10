@@ -4,6 +4,7 @@ import utils from "../shared/utils"
 import { CharacterProperties } from "../interfaces/CharacterProperties";
 import SquareTilePos from "./SquareTilePos";
 import Item from "./Item";
+import SquareTile from "./SquareTile";
 
 /**
  * This class defines a basic Character type.
@@ -15,6 +16,10 @@ export default class Character {
 	currentPath: Vector[] = [];
 	currentPathId: string = "";
 	props: CharacterProperties = { inventory: [] };
+	/**
+	 * Indicates the max distance in squares where the character can see
+	 */
+	visionReach: number = 4;
 
 	constructor();
     constructor(_props: CharacterProperties);
@@ -70,5 +75,17 @@ export default class Character {
 
 	htmlDescription() {
 		return '';
+	}
+
+	/**
+	 * Indicates is this character can see a tile
+	 * @param t Tile in question
+	 * @returns True is the tile can be seen from the Character position
+	 */
+	canSeeTile(t: SquareTile){
+		let dist = t.getDistanceFromTile(this.currentPosition);
+		if(dist.distance <= this.visionReach && !dist.isBlocked)
+			return true;
+		return false;
 	}
 }
